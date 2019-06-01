@@ -1,0 +1,11 @@
+{
+    "name": "mtg-spoilers",
+    "version": "1.0.0",
+    "description": "A bot to automatically post spoilers for Magic the Gathering in Discord",
+    "main": "bot.js",
+    "author": "Jozeevis",
+    "dependencies": {
+        "discord.io": "github:woor/discord.io#gateway_v6",
+        "winston": "^3.2.1"
+    }
+}
