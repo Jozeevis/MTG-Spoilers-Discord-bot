@@ -6,6 +6,7 @@
     "author": "Jozeevis",
     "dependencies": {
         "discord.io": "github:woor/discord.io#gateway_v6",
+        "lodash": "^4.17.12",
         "winston": "^3.2.1"
     }
 }

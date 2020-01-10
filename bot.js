@@ -1,109 +1,128 @@
 var Discord = require('discord.io');
-var logger = require('winston');
 var auth = require('./auth.json');
 var fs = require("fs");
 
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console, {
-    colorize: true
-});
-logger.level = 'debug';
+//Constants
+WATCHEDSETCODESDIRECTORY = __dirname + '/data';
+WATCHEDSETCODESFILENAME = 'watchedsetcodes.json';
+WATCHEDSETCODESPATH = WATCHEDSETCODESDIRECTORY + '/' + WATCHEDSETCODESFILENAME;
+SPOILERWATCHINTERVALTIME = 1000 * 30 * 60;
 
 // Initialize Discord Bot
+Log('Initializing bot...');
 var bot = new Discord.Client({
    token: auth.token,
    autorun: true
 });
+
 //When bot is ready
 bot.on('ready', function (evt) {
-    logger.info('Connected');
-    logger.info('Logged in as: ');
-    logger.info(bot.username + ' - (' + bot.id + ')');
+    Log('Connected!');
+    Log('Logged in as: ' + bot.username + ' - (' + bot.id + ')');
 
     // Read watched sets and start spoiler watches
     watchedSetcodes = readWatchedSets();
+    intervals = [];
 });
-
-//Constants
-WATCHEDSETCODESFILENAME = __dirname + '/data/watchedsetcodes.json';
-SPOILERWATCHINTERVALTIME = 1000 * 30 * 60;
 
 //When bot reads message
 bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
     if (message.substring(0, 1) == '!') {
-        var args = message.substring(1).split(' ');
-        var cmd = args[0];
-       
-        args = args.splice(1);
-        let set = args[0];
-        switch(cmd.toLowerCase()) {
-            //Get all cards from the given set and send them in the current channel
-            case 'getallCards':
-                getAllCards(set, channelID, true);
-            break;
-            //Start spoilerwatch for the given set ID in the current channel
-            case 'watch':
-            case 'startwatch':
-                //Add the combination to the watched sets and save this
-                watchedSetcodes.push({"setCode":set, "channelID":channelID});
-                saveWatchedSets()
-                console.log(getDate() + 'Starting spoilerwatch for set ' + set + '.');
-                bot.sendMessage({
-                    to: channelID,
-                    message: 'Starting spoilerwatch for set ' + set + '.',
-                });
-
-                //Immediately look for new cards
-                console.log(getDate() + 'Start looking for new cards on ' + Date.now());
-                getAllCards(set, channelID);
-                //Start the interval to look for new cards
-                startSpoilerWatch(set, channelID);
-            break;
-            //Stop spoilerwatch for the given set ID in the current channel
-            case 'unwatch':
-            case 'stopwatch':
-                console.log(getDate() + 'checking spoilerwatch for set ' + set + '.');
-                console.log(getDate() + 'Checking if set matches with ' + set + ' and channel matches with ' + channelID);
-                // Check if set is watched in the current channel
-                if (watchedSetcodes && watchedSetcodes.filter(arr, c => c.setCode == set && c.channelID == channelID)) {
-                    console.log(getDate() + 'Stopping spoilerwatch for set ' + set + '.');
-                    bot.sendMessage({
-                        to: channelID,
-                        message: 'Stopping spoilerwatch for set ' + set + '.',
-                    });
-                    // Stop the interval that checks for spoilers
-                    clearInterval(watchInterval);
-                    // Remove the set and channel combination from the watchedSetcodes and save it
-                    watchedSetcodes = watchedSetcodes.filter(arr, c => c.setCode != set || c.channelID != channelID);
+        try {
+            var args = message.substring(1).split(' ');
+            var cmd = args[0];
+        
+            args = args.splice(1);
+            let set = args[0];
+            switch(cmd.toLowerCase()) {
+                //Get all cards from the given set and send them in the current channel
+                case 'getallCards':
+                case 'getallcards':
+                case 'getall':
+                    getAllCards(set, channelID, true);
+                break;
+                //Start spoilerwatch for the given set ID in the current channel
+                case 'watch':
+                case 'startwatch':
+                    //Add the combination to the watched sets and save this
+                    watchedSetcodes.push({"setCode":set, "channelID":channelID});
                     saveWatchedSets()
-                }
-            break;
-            // Clears the saved data for the given set in the current channel
-            case 'clear':
-                let fileName = getFilename(set, channelID);
-                try {
-                    fs.writeFile(fileName, "[]", (err) => {
-                        if (err) console.log(getDate() + err);
-                        console.log(getDate() + "Successfully cleared file " + fileName + ".");
-                    });
+                    Log('Starting spoilerwatch for set ' + set + '.');
                     bot.sendMessage({
                         to: channelID,
-                        message: "Successfully cleared file for set with code " + set + ".",
+                        message: 'Starting spoilerwatch for set ' + set + '.',
                     });
-                }
-                catch(error) {
-                    bot.sendMessage({
-                        to: channelID,
-                        message: "Something went wrong with clearing file for set with code " + set + ".",
-                    });
-                    console.log(getDate() + "Something went wrong with clearing file for set with code " + set + ".");
-                    console.log(getDate() + error);
-                }
-            break;
-         }
+
+                    //Immediately look for new cards
+                    Log('Start looking for new cards on ' + Date.now());
+                    getAllCards(set, channelID);
+                    //Start the interval to look for new cards
+                    startSpoilerWatch(set, channelID);
+                break;
+                //Stop spoilerwatch for the given set ID in the current channel
+                case 'unwatch':
+                case 'stopwatch':
+                    Log('checking spoilerwatch for set ' + set + '.');
+                    Log('Checking if set matches with ' + set + ' and channel matches with ' + channelID);
+                    // Check if set is watched in the current channel
+                    if (watchedSetcodes && watchedSetcodes.filter(function (watchedset) {
+                        watchedset.setCode == set && watchedset.channelID == channelID
+                    })) 
+                    {
+                        Log('Stopping spoilerwatch for set ' + set + '.');
+                        bot.sendMessage({
+                            to: channelID,
+                            message: 'Stopping spoilerwatch for set ' + set + '.',
+                        });
+                        // Find the timeout for this set and channel
+                        intervals.find((o, i) => {
+                            if (o.setcode == set && o.channel == channelID) {
+                                // Stop the interval that checks for spoilers
+                                clearInterval(o.interval);
+                                intervals.splice(i, 1);
+                                return true;
+                            }
+                        });
+                        // Remove the set and channel combination from the watchedSetcodes and save it
+                        watchedSetcodes = watchedSetcodes.filter(function(watchedset) {
+                            watchedset.setCode != set || watchedset.channelID != channelID
+                        });
+                        saveWatchedSets()
+                    }
+                break;
+                // Clears the saved data for the given set in the current channel
+                case 'clear':
+                    let fileName = getFilename(set, channelID);
+                    try {
+                        fs.writeFile(fileName, "[]", (err) => {
+                            if (err) Log('ERROR: ' + err);
+                            Log("Successfully cleared file " + fileName + ".");
+                        });
+                        bot.sendMessage({
+                            to: channelID,
+                            message: "Successfully cleared file for set with code " + set + ".",
+                        });
+                    }
+                    catch(error) {
+                        bot.sendMessage({
+                            to: channelID,
+                            message: "Something went wrong with clearing file for set with code " + set + ".",
+                        });
+                        Log("Something went wrong with clearing file for set with code " + set + ".");
+                        Log('ERROR: ' + error);
+                    }
+                break;
+            }
+        }
+        catch (error) {
+            Log('UNCAUGHT ERROR: ' + error)
+            bot.sendMessage({
+                to: channelID,
+                message: "Something went really wrong. Please tell Lars he's an idiot.",
+            });
+        }
      }
 });
 
@@ -116,22 +135,22 @@ function getAllCards(set, channelID, verbose = false) {
         if (!exists) {
             // If data file doesn't exist yet, make an empty one
             fs.writeFile(fileName, "[]", (err) => {
-                if (err) console.log(getDate() + err);
-                console.log(getDate() + "Successfully written to file " + fileName + ".");
+                if (err) Log('ERROR: ' + err);
+                Log("Successfully written to file " + fileName + ".");
             });
         }
         else {
             // If data file does exist, try to read it
             try {
                 fs.readFile(fileName, function(err, buf) {
-                    if (err) console.log(getDate() + err);
+                    if (err) Log("ERROR: " + err);
                     savedCardlist = JSON.parse(buf);
-                    console.log(getDate() + "Successfully read file " + fileName + ".");
+                    Log("Successfully read file " + fileName + ".");
                 });
             }
             catch(error) {
-                console.log(getDate() + "Something went wrong with parsing data from existing saved file.");
-                console.log(getDate() + error);
+                Log("Something went wrong with parsing data from existing saved file.");
+                Log('ERROR: ' + error);
                 return;
             }
         }
@@ -160,8 +179,8 @@ function getAllCards(set, channelID, verbose = false) {
                 cardlist = JSON.parse(data);
             }
             catch(error) {
-                console.log(getDate() + "Something went wrong with parsing data from Scryfall.");
-                console.log(getDate() + error);
+                Log("Something went wrong with parsing data from Scryfall.");
+                Log('ERROR:' + error);
                 return;
             }
             var newCardlist = [];
@@ -178,7 +197,7 @@ function getAllCards(set, channelID, verbose = false) {
 
                 // If new list is empty, no new cards were found
                 if (newCardlist.length <= 0) {
-                    console.log(getDate() + 'No new cards were found with set code ' + set);
+                    Log('No new cards were found with set code ' + set);
                     if (verbose) {
                         bot.sendMessage({
                             to: channelID,
@@ -188,17 +207,17 @@ function getAllCards(set, channelID, verbose = false) {
                 }
                 else {
                     // If new list wasn't empty, send one of the new cards to the channel every second
-                    console.log(getDate() + newCardlist.length + ' new cards were found with set code ' + set);
+                    Log(newCardlist.length + ' new cards were found with set code ' + set);
                     var interval = setInterval(function(cards) {
                         if (cards.length <= 0) {
-                            console.log(getDate() + 'Done with sending cards to channel.');
+                            Log('Done with sending cards to channel.');
                             clearInterval(interval);
                         }
                         else {
                             // Get all relevant data from the card
                             let card = cards.pop();
                             cardName = card.name;
-                            console.log(getDate() + 'Sending ' + cardName + ' to channel.');
+                            Log('Sending ' + cardName + ' to channel.');
                             cardImageUrl = card.image_uris.normal;
                             cardText = card.oracle_text;
                             cardCost = card.mana_cost.replace(new RegExp('[{}]','g'), '');
@@ -215,6 +234,8 @@ function getAllCards(set, channelID, verbose = false) {
                             }
                             message = message + cardImageUrl;
 
+                            intervals.push({interval: interval, setcode: set, channel: channelID});
+
                             bot.sendMessage({
                                 to: channelID,
                                 message: message,
@@ -226,13 +247,13 @@ function getAllCards(set, channelID, verbose = false) {
                         // Save the updated list of saved cards to the datafile
                         let savedCardlistJSON = JSON.stringify(savedCardlist);
                         fs.writeFile(fileName, savedCardlistJSON, function(err) {
-                            if (err) console.log(getDate() + err);
-                            console.log(getDate() + 'New card list has succesfully been saved!');
+                            if (err) Log("ERROR: " + err);
+                            Log('New card list has succesfully been saved!');
                         });
                     }
                     catch(error) {
-                        console.log(getDate() + "Something went wrong with saving new data.");
-                        console.log(getDate() + error);
+                        Log("Something went wrong with saving new data.");
+                        Log("ERROR: " + error);
                         return;
                     }
                 }
@@ -246,7 +267,7 @@ function getAllCards(set, channelID, verbose = false) {
         });
 
         }).on("error", (err) => {
-            console.log(getDate() + "Error: " + err.message);
+            Log("Error: " + err.message);
             bot.sendMessage({
                 to: channelID,
                 message: 'Error trying to get cards with set code ' + set + './n'  +
@@ -263,18 +284,28 @@ function getFilename(set, channelID) {
 
 // Saves the array of watched sets and channel IDs to the data file
 function saveWatchedSets() {
-    fs.writeFile(WATCHEDSETCODESFILENAME, JSON.stringify(watchedSetcodes), (err) => {
-        if (err) console.log(getDate() + err);
-        console.log(getDate() + "Successfully written to file " + WATCHEDSETCODESFILENAME + ".");
+    fs.writeFile(WATCHEDSETCODESPATH, JSON.stringify(watchedSetcodes), (err) => {
+        if (err) Log('ERROR: ' + err);
+        Log("Successfully written to file " + WATCHEDSETCODESPATH + ".");
     });
 }
 
 // Reads the array of watched sets and channel IDs from the data file
 function readWatchedSets() {
-    fs.readFile(WATCHEDSETCODESFILENAME, function(err, buf) {
-        if (err) console.log(getDate() + err);
+    if (!fs.existsSync(WATCHEDSETCODESDIRECTORY)) {
+        fs.mkdirSync(WATCHEDSETCODESDIRECTORY);
+    }
+    if (!fs.existsSync(WATCHEDSETCODESPATH)) {
+        fs.writeFile(WATCHEDSETCODESPATH, '[]', function (err) {
+            if (err) {
+                Log('ERROR: ' + err);
+            }
+        });
+    }
+    fs.readFile(WATCHEDSETCODESPATH, function(err, buf) {
+        if (err) Log('ERROR: ' + err);
         watchedSetcodes = JSON.parse(buf);
-        console.log(getDate() + "Successfully read file " + WATCHEDSETCODESFILENAME + ".");
+        Log("Successfully read file " + WATCHEDSETCODESPATH + ".");
         startSpoilerWatches()
     });
     return;
@@ -282,20 +313,21 @@ function readWatchedSets() {
 
 // Start the spoiler watch intervals for all combinations in the saved file
 function startSpoilerWatches() {
-    console.log(getDate() + 'Watched sets: ' + watchedSetcodes);
-    watchedSetcodes.forEach(function(watchedSet) {
-        console.log(getDate() + 'Watched set: ' + watchedSet);
-        console.log(getDate() + 'Start looking for new cards in set ' + watchedSet.setCode + ' for channel ' + watchedSet.channelID);
+    Log('Watched sets: ' + JSON.stringify(watchedSetcodes));
+    for (var i = 0; i < watchedSetcodes.length; i++) {
+        var watchedSet = watchedSetcodes[i];
+        Log('Watched set: ' + JSON.stringify(watchedSet));
+        Log('Start looking for new cards in set ' + watchedSet.setCode + ' for channel ' + watchedSet.channelID);
         startSpoilerWatch(watchedSet.setCode, watchedSet.channelID);
         getAllCards(watchedSet.setCode, watchedSet.channelID, false);
-    });
+    }
     return;
 }
 
 //Start the interval to look for new cards for the given set and channelID
 function startSpoilerWatch(set, channelID) {
     setInterval(function(set) {
-        console.log(getDate() + 'Start looking for new cards in set ' + set + ' for channel ' + channelID);
+        Log('Start looking for new cards in set ' + set + ' for channel ' + channelID);
         getAllCards(set, channelID);
     }, SPOILERWATCHINTERVALTIME, set);
     return;
@@ -324,4 +356,8 @@ function getDate() {
     } 
     var today = '[' + dd + '/' + mm + '/' + yyyy + ' ' + h + ':' + m + '] - ';
     return today;
+}
+
+function Log(message) {
+    console.log(getDate() + " - " + message);
 }
