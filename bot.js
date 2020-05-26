@@ -187,7 +187,7 @@ function getAllCards(set, channelID, verbose = false) {
             if (cardlist.object == 'list' && cardlist.total_cards > 0) {
                 // For every card: check if it's already save, otherwise at it to the new list
                 cardlist.data.forEach(function(card) {
-                    cardId = card.id;
+                    cardId = card.oracle_id;
 
                     if (!savedCardlist.some(c => c == cardId)) {
                         newCardlist.push(card);
