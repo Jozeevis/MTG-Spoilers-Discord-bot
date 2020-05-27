@@ -126,6 +126,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
      }
 });
 
+// Reconnect if the bot is disconnected
+bot.on('disconnect', function(errMsg, code) { 
+    Log('ERROR code ' + code +': ' + errMsg);
+    if (code === 1000) {
+        bot.connect();
+    }
+});
+
 // Finds all new cards in the given set that haven't been posted to the given channel yet and posts them there
 function getAllCards(set, channelID, verbose = false) {
     // Read which cards are already saved
