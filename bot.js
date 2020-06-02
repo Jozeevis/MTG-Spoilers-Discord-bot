@@ -267,10 +267,12 @@ function getAllCards(set, channelID, verbose = false) {
                 }
             }
             else {
-                bot.sendMessage({
-                    to: channelID,
-                    message: 'Did not find any card with set code ' + set + '.',
-                });
+                if (verbose) {
+                    bot.sendMessage({
+                        to: channelID,
+                        message: 'Did not find any card with set code ' + set + '.',
+                    });
+                }
             }
         });
 
@@ -327,7 +329,7 @@ function startSpoilerWatches() {
         Log('Watched set: ' + JSON.stringify(watchedSet));
         Log('Start looking for new cards in set ' + watchedSet.setCode + ' for channel ' + watchedSet.channelID);
         startSpoilerWatch(watchedSet.setCode, watchedSet.channelID);
-        getAllCards(watchedSet.setCode, watchedSet.channelID, false);
+        getAllCards(watchedSet.setCode, watchedSet.channelID);
     }
     return;
 }
