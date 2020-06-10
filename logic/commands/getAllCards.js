@@ -2,6 +2,7 @@ const fs = require("fs");
 
 const logging = require('../common/logging');
 const IO = require('../common/io');
+const cardHelper = require('../card-helper');
 
 module.exports = {
     // Finds all new cards in the given set that haven't been posted to the given channel yet and posts them there
@@ -94,26 +95,16 @@ module.exports = {
                                 else {
                                     // Get all relevant data from the card
                                     let card = cards.pop();
-                                    cardName = card.name;
+                                    let cardName = card.name;
                                     logging.Log('Sending ' + cardName + ' to channel.');
-                                    cardImageUrl = card.image_uris.normal;
-                                    cardText = card.oracle_text;
-                                    cardCost = card.mana_cost.replace(new RegExp('[{}]', 'g'), '');
-                                    cardType = card.type_line;
-                                    cardRarity = card.rarity;
-                                    cardFlavourText = card.flavor_text;
+                                    let cardImageUrl = card.image_uris ? card.image_uris.normal : '';
+                                    let cardCost = card.mana_cost ? card.mana_cost.replace(new RegExp('[{}]', 'g'), '') : '';
+                                    let cardText = cardHelper.generateDescriptionText(card);
 
                                     // Construct the discord message
                                     let message = '**' + cardName + '** - ' + cardCost + '\n'
-                                        + cardType + ' (' + cardRarity + ')\n'
                                         + cardText + '\n';
-                                    if (cardFlavourText != undefined) {
-                                        message = message + '_' + cardFlavourText + '_\n';
-                                    }
                                     message = message + cardImageUrl;
-
-                                    let messageIntervals = []; 
-                                    messageIntervals.push({ interval: interval, setcode: set, channel: channel.id })
                                     
                                     channel.send(message);
                                 }
