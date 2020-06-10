@@ -29,8 +29,8 @@ module.exports = {
 
   // Reads the array of watched sets and channel IDs from the data file
   readWatchedSets: function () {
-    if (!fs.existsSync(constants.WATCHEDSETCODESDIRECTORY)) {
-      fs.mkdirSync(constants.WATCHEDSETCODESDIRECTORY);
+    if (!fs.existsSync(constants.DATADIRECTORY)) {
+      fs.mkdirSync(constants.DATADIRECTORY);
     }
     if (!fs.existsSync(constants.WATCHEDSETCODESPATH)) {
       fs.writeFile(constants.WATCHEDSETCODESPATH, "[]", function (err) {
@@ -54,5 +54,79 @@ module.exports = {
       spoilerWatches.startSpoilerWatches();
     });
     return;
+  },
+
+  // Reads preferred prefix from the settings
+  readPrefix: function (defaultPrefix) {
+    let newPrefix = defaultPrefix;
+    if (!fs.existsSync(constants.DATADIRECTORY)) {
+      fs.mkdirSync(constants.DATADIRECTORY);
+    }
+    if (!fs.existsSync(constants.SETTINGSPATH)) {
+      fs.writeFile(
+        constants.SETTINGSPATH,
+        '{"prefix":"' + defaultPrefix + '"}',
+        function (err) {
+          if (err) {
+            logging.Log(
+              "Something went wrong with creating new default settings file"
+            );
+            logging.Log("ERROR: " + err);
+          }
+        }
+      );
+    } else {
+      fs.readFile(constants.SETTINGSPATH, function (err, buf) {
+        if (err) {
+          logging.Log("Something went wrong with reading settings.json");
+          logging.Log("ERROR: " + err);
+        }
+        let settings = JSON.parse(buf);
+        logging.Log("Successfully read file " + constants.SETTINGSPATH + ".");
+        newPrefix = settings.prefix;
+      });
+    }
+    return newPrefix;
+  },
+
+  // Write a new prefix to the settings
+  writePrefix: function (newPrefix) {
+    if (!fs.existsSync(constants.DATADIRECTORY)) {
+      fs.mkdirSync(constants.DATADIRECTORY);
+    }
+    if (!fs.existsSync(constants.SETTINGSPATH)) {
+      fs.writeFile(
+        constants.SETTINGSPATH,
+        '{"prefix":"' + newPrefix + '"}',
+        function (err) {
+          if (err) {
+            logging.Log("Something went wrong with creating new settings file");
+            logging.Log("ERROR: " + err);
+          }
+        }
+      );
+    } else {
+      fs.readFile(constants.SETTINGSPATH, function (err, buf) {
+        if (err) {
+          logging.Log("Something went wrong with reading settings.json");
+          logging.Log("ERROR: " + err);
+        }
+        let settings = JSON.parse(buf);
+        settings.prefix = newPrefix;
+        fs.writeFile(
+          constants.SETTINGSPATH,
+          JSON.stringify(settings),
+          function (err) {
+            if (err) {
+              logging.Log(
+                "Something went wrong with updating prefix in the settings file"
+              );
+              logging.Log("ERROR: " + err);
+            }
+          }
+        );
+        logging.Log("Successfully updated the prefix in the settings file.");
+      });
+    }
   },
 };

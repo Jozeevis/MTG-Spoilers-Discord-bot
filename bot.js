@@ -1,90 +1,101 @@
-const Discord = require('discord.js');
-const auth = require('./auth.json');
+const Discord = require("discord.js");
+const auth = require("./auth.json");
 
-const dataIO = require('./logic/data-io');
-const commands = require('./logic/commands');
-const logging = require('./logic/common/logging');
-const permissions = require('./logic/common/permissions');
+const constants = require("./logic/constants");
+const dataIO = require("./logic/data-io");
+const commands = require("./logic/commands");
+const logging = require("./logic/common/logging");
+const permissions = require("./logic/common/permissions");
 
 // Initialize Discord Bot
-logging.Log('Initializing bot...');
+logging.Log("Initializing bot...");
 global.bot = new Discord.Client(); /* global bot */
 
 try {
-    bot.login(auth.token);
-} catch(err) {
-    logging.Log(err);
+  bot.login(auth.token);
+} catch (err) {
+  logging.Log(err);
 }
 
 //When bot is ready
-bot.on('ready', function () {
-    logging.Log('Connected!');
-    logging.Log('Logged in as: ' + bot.user.username + ' - (' + bot.user.id + ')');
+bot.on("ready", function () {
+  logging.Log("Connected!");
+  logging.Log(
+    "Logged in as: " + bot.user.username + " - (" + bot.user.id + ")"
+  );
 
-    // Initialize savedIntervals and watchedSetcodes
-    global.savedIntervals = [];
-    global.watchedSetcodes = dataIO.readWatchedSets();
+  // Initialize savedIntervals and watchedSetcodes
+  global.savedIntervals = [];
+  global.watchedSetcodes = dataIO.readWatchedSets();
+  global.prefix = dataIO.readPrefix(
+    constants.BOTDEFAULTPREFIX
+  ); /* global prefix */
 });
 
 //When bot reads message
-bot.on('message', async message => {
-    // Our bot needs to know if it will execute a command
-    // It will listen for messages that will start with `!`
-    if (message.content.substring(0, 1) == '!') {
-        try {
-            let args = message.content.substring(1).split(' ');
-            let cmd = args[0];
-        
-            args = args.splice(1);
-            let set = args[0];
-            switch(cmd.toLowerCase()) {
-                //Get all cards from the given set and send them in the current channel
-                case 'getall':
-                case 'getallcards':
-                    if (permissions.checkPermissions(message)) {
-                        commands.getAllCards(message.channel, set);
-                    }
-                break;
-                //Get all new cards from the given set and send them in the current channel
-                case 'getnew':
-                case 'getnewcards':
-                    if (permissions.checkPermissions(message)) {
-                        commands.getNewCards(message.channel, set, true);
-                    }
-                break;
-                //Start spoilerwatch for the given set ID in the current channel
-                case 'watch':
-                case 'startwatch':
-                    if (permissions.checkPermissions(message)) {
-                        commands.startWatch(message.channel, set);
-                    }
-                break;
-                //Stop spoilerwatch for the given set ID in the current channel
-                case 'unwatch':
-                case 'stopwatch':
-                    if (permissions.checkPermissions(message)) {
-                        commands.stopWatch(message.channel, set);
-                    }
-                break;
-                // Clears the saved data for the given set in the current channel
-                case 'clear':
-                    if (permissions.checkPermissions(message)) {
-                        commands.clear(message.channel, set);
-                    }
-                break;
-            }
-        }
-        catch (error) {
-            logging.Log('UNCAUGHT ERROR: ' + error)
-            message.channel.send("Something went wrong.");
-        }
-     }
+bot.on("message", async (message) => {
+  // Our bot needs to know if it will execute a command
+  // It will listen for messages that will start with the specified prefix
+  if (message.content.substring(0, 1) == prefix) {
+    try {
+      let args = message.content.substring(1).split(" ");
+      let cmd = args[0];
+
+      args = args.splice(1);
+      let arg2 = args[0];
+      switch (cmd.toLowerCase()) {
+        //Get all cards from the given set and send them in the current channel
+        case "getall":
+        case "getallcards":
+          if (permissions.checkPermissions(message)) {
+            commands.getAllCards(message.channel, arg2);
+          }
+          break;
+        //Get all new cards from the given set and send them in the current channel
+        case "getnew":
+        case "getnewcards":
+          if (permissions.checkPermissions(message)) {
+            commands.getNewCards(message.channel, arg2, true);
+          }
+          break;
+        //Start spoilerwatch for the given set ID in the current channel
+        case "watch":
+        case "startwatch":
+          if (permissions.checkPermissions(message)) {
+            commands.startWatch(message.channel, arg2);
+          }
+          break;
+        //Stop spoilerwatch for the given set ID in the current channel
+        case "unwatch":
+        case "stopwatch":
+          if (permissions.checkPermissions(message)) {
+            commands.stopWatch(message.channel, arg2);
+          }
+          break;
+        // Clears the saved data for the given set in the current channel
+        case "clear":
+          if (permissions.checkPermissions(message)) {
+            commands.clear(message.channel, arg2);
+          }
+          break;
+        // Changes the prefix the bot uses for its commands
+        case "prefix":
+          if (permissions.checkPermissions(message)) {
+            commands.prefix(message.channel, arg2);
+          }
+          break;
+      }
+    } catch (error) {
+      logging.Log("UNCAUGHT ERROR: " + error);
+      message.channel.send("Something went wrong.");
+    }
+  }
 });
 
 // Reconnect if the bot is disconnected gracefully
-bot.on('disconnect', function(errMsg, code) { 
-    logging.Log('ERROR code ' + code +': ' + errMsg);
-    if (code === 1000) {
-        bot.connect();
-    }
+bot.on("disconnect", function (errMsg, code) {
+  logging.Log("ERROR code " + code + ": " + errMsg);
+  if (code === 1000) {
+    bot.connect();
+  }
 });
