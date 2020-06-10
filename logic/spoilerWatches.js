@@ -1,6 +1,6 @@
 const constants = require("./constants");
 const logging = require("./common/logging");
-const getAllCardsCommands = require("./commands/getAllCards");
+const getNewCardsCommands = require("./commands/getNewCards");
 
 /* global bot, watchedSetcodes, savedIntervals  */
 
@@ -15,7 +15,7 @@ module.exports = {
             " for channel " +
             channel.id
         );
-        getAllCardsCommands.getAllCards(channel, set);
+        getNewCardsCommands.getNewCards(channel, set);
       },
       constants.SPOILERWATCHINTERVALTIME,
       set
@@ -44,7 +44,7 @@ module.exports = {
         channel: channel.id,
         interval: interval,
       });
-      getAllCardsCommands.getAllCards(channel, watchedSet.setCode);
+      getNewCardsCommands.getNewCards(channel, watchedSet.setCode);
     }
     return;
   },
