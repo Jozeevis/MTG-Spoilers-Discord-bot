@@ -8,7 +8,7 @@ const permissions = require('./logic/common/permissions');
 
 // Initialize Discord Bot
 logging.Log('Initializing bot...');
-global.bot = new Discord.Client();
+global.bot = new Discord.Client(); /* global bot */
 
 try {
     bot.login(auth.token);
@@ -17,7 +17,7 @@ try {
 }
 
 //When bot is ready
-bot.on('ready', function (evt) {
+bot.on('ready', function () {
     logging.Log('Connected!');
     logging.Log('Logged in as: ' + bot.user.username + ' - (' + bot.user.id + ')');
 
