@@ -1,7 +1,7 @@
 const logging = require("../common/logging");
 const dataIO = require("../data-io");
 const spoilerWatches = require("../spoilerWatches");
-const getAllCardsCommand = require("./getAllCards");
+const getNewCardsCommand = require("./getNewCards");
 
 /* global watchedSetcodes, savedIntervals  */
 
@@ -16,7 +16,7 @@ module.exports = {
 
     //Immediately look for new cards
     logging.Log("Start looking for new cards on " + Date.now());
-    getAllCardsCommand.getAllCards(channel, set);
+    getNewCardsCommand.getNewCards(channel, set);
     //Start the interval to look for new cards
     let interval = spoilerWatches.startSpoilerWatch(set, channel.id);
     savedIntervals.push({

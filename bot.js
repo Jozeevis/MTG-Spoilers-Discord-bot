@@ -42,7 +42,14 @@ bot.on('message', async message => {
                 case 'getall':
                 case 'getallcards':
                     if (permissions.checkPermissions(message)) {
-                        commands.getAllCards(message.channel, set, true);
+                        commands.getAllCards(message.channel, set);
+                    }
+                break;
+                //Get all new cards from the given set and send them in the current channel
+                case 'getnew':
+                case 'getnewcards':
+                    if (permissions.checkPermissions(message)) {
+                        commands.getNewCards(message.channel, set, true);
                     }
                 break;
                 //Start spoilerwatch for the given set ID in the current channel
