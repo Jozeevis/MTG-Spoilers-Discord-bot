@@ -2,7 +2,7 @@
 A Discord bot for automatically posting Magic: The Gathering card spoilers. Works with the Scryfall API.
 
 ## Commands
-Command prefix is '!', no functionality implemented yet to adjust this.
+Command prefix is '!' by default.
 ### getall/getallcards [SETCODE]
 Will send a message for every card from the set with the given setcode.
 ### getnew/getnewcards [SETCODE]
@@ -13,6 +13,8 @@ Will start a watch for the set with the given setcode. This means the bot will w
 Will stop the watch for the set with the given setcode if any is currently started. This will stop the bot from watching for unsent cards and stop it from sending any messages automatically.
 ### clear [SETCODE]
 Will clear the list of any already sent cards from the set with the given setcode. This means the bot will stop excluding these cards from being send to the channel with the 'getnew' and 'watch' commands, and send every card from that set again when using these commands.
+### prefix [NEWPREFIX]
+Will change the prefix the bot listens to to the given new prefix.
 
 ## File Structure
 ```

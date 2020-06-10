@@ -8,7 +8,6 @@ const getNewCardsCommand = require("./getNewCards");
 module.exports = {
   startWatch: function (channel, set) {
     //Add the combination to the watched sets and save this
-    console.log("Watched setcodes ext: " + watchedSetcodes);
     watchedSetcodes.push({ setCode: set, channelID: channel.id });
     dataIO.saveWatchedSets();
     logging.Log("Starting spoilerwatch for set " + set + ".");
