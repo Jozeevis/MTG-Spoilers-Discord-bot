@@ -17,7 +17,7 @@ module.exports = {
     logging.Log("Start looking for new cards on " + Date.now());
     getNewCardsCommand.getNewCards(channel, set);
     //Start the interval to look for new cards
-    let interval = spoilerWatches.startSpoilerWatch(set, channel.id);
+    let interval = spoilerWatches.startSpoilerWatch(channel, set);
     savedIntervals.push({
       setcode: set,
       channel: channel.id,
