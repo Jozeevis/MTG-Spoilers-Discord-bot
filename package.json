@@ -6,7 +6,7 @@
     "author": "Jozeevis",
     "dependencies": {
         "discord.js": "^12.2.0",
-        "lodash": "^4.17.12"
+        "lodash": "^4.17.19"
     },
     "devDependencies": {
         "eslint": "^7.2.0",
