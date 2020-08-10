@@ -41,3 +41,4 @@ This file contains a list of entries telling the bot which channel is expecting 
 The value of "setCode" here is the three letter abbreviation of the set (e.g. "m21"). The value of "channelID" is the Discord channel ID.
 ### [channelId]-[setCode]-data.json files
 For every combination channelID-setCode that has cards sent to it, the bot will create one of these files, with the corresponding channelID and setCode in the filename. Each files is a simple list of IDs that Scryfall gives to every magic card. The ID used is the oracle_ID which is unique for every mechanically different card, but not for alternate arts. This means that only one unique art/frame for every card will be sent by the bot.
+ 
