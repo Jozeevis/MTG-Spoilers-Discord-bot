@@ -43,19 +43,25 @@ bot.on("message", async (message) => {
 
       args = args.splice(1);
       let arg2 = args[0];
+
+      let arg3;
+      if (args.length > 1) {
+          arg3 = args[1];
+      }
+
       switch (cmd.toLowerCase()) {
         //Get all cards from the given set and send them in the current channel
         case "getall":
         case "getallcards":
           if (permissions.checkPermissions(message)) {
-            commands.getAllCards(message.channel, arg2);
+            commands.getAllCards(message.channel, arg2, arg3);
           }
           break;
         //Get all new cards from the given set and send them in the current channel
         case "getnew":
         case "getnewcards":
           if (permissions.checkPermissions(message)) {
-            commands.getNewCards(message.channel, arg2, true);
+            commands.getNewCards(message.channel, arg2, true, arg3);
           }
           break;
         //Start spoilerwatch for the given set ID in the current channel

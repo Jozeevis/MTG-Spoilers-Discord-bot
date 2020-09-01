@@ -4,9 +4,12 @@ const logging = require("../common/logging");
 const IO = require("../common/io");
 const cardHelper = require("../card-helper");
 
+const { BASICLANDNAMES } = require("../constants");
+
 module.exports = {
   // Finds all new cards in the given set that haven't been posted to the given channel yet and posts them there
-  getNewCards: function (channel, set, verbose = false) {
+  getNewCards: function (channel, set, verbose = false, ignoreBasics = true) {
+    ignoreBasics = ignoreBasics != 'false';
     // Read which cards are already saved
     let fileName = IO.getFilename(set, channel.id);
     let savedCardlist = JSON.parse("[]");
@@ -43,9 +46,11 @@ module.exports = {
       }
 
       if (verbose) {
-        channel.send(
-          "Trying to get newly spoiled cards from set with code " + set + "..."
-        );
+        let message = "Trying to get newly spoiled cards from set with code " + set;
+        if (ignoreBasics != false) {
+            message += " (excluding basic lands)";
+        }
+        channel.send(message + "...");
       }
 
       // Make a request to the Scryfall api
@@ -76,9 +81,17 @@ module.exports = {
                 logging.Log("ERROR:" + error);
                 return;
               }
+
+              if (ignoreBasics) {
+                  logging.Log("Ignoring basic lands");
+                cardlist.data = cardlist.data.filter((card) => {
+                    return !BASICLANDNAMES.includes(card.name.toLowerCase());
+                });
+              }
+
               let newCardlist = [];
               if (cardlist && cardlist.object == "list" && cardlist.total_cards > 0) {
-                // For every card: check if it's already save, otherwise at it to the new list
+                // For every card: check if it's already saved, otherwise at it to the new list
                 cardlist.data.forEach(function (card) {
                   let cardId = card.oracle_id;
 
@@ -112,7 +125,6 @@ module.exports = {
                         // Get all relevant data from the card
                         let card = cards.pop();
                         let message = cardHelper.generateCardMessage(card);
-
                         channel.send(message);
                       }
                     },

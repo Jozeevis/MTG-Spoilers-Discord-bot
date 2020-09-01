@@ -1,10 +1,16 @@
 const logging = require("../common/logging");
 const cardHelper = require("../card-helper");
+const { BASICLANDNAMES } = require("../constants");
 
 module.exports = {
   // Finds all cards in the given set that and post them to the given channel
-  getAllCards: function (channel, set) {
-    channel.send("Trying to get cards from set with code " + set + "...");
+  getAllCards: function (channel, set, ignoreBasics = true) {
+      ignoreBasics = ignoreBasics != 'false';
+      let message = "Trying to get cards from set with code " + set;
+      if (ignoreBasics != false) {
+          message += " (excluding basic lands)";
+      }
+    channel.send(message + "...");
 
     // Make a request to the Scryfall api
     const https = require("https");
@@ -42,14 +48,22 @@ module.exports = {
               if (cardlist.warnings) {
                   logging.Log(cardlist.warnings);
               }
+
+              if (ignoreBasics) {
+                  logging.Log("Ignoring basic lands");
+                cardlist.data = cardlist.data.filter((card) => {
+                    return !BASICLANDNAMES.includes(card.name.toLowerCase());
+                });
+              }
+
               // If new list is empty, no new cards were found
-              if (cardlist.length <= 0) {
+              if (cardlist.total_cards <= 0) {
                 logging.Log("No cards were found with set code " + set);
                 channel.send("No cards were found with set code " + set + ".");
               } else {
                 // If new list wasn't empty, send one of the new cards to the channel every second
                 logging.Log(
-                  cardlist.length + " cards were found with set code " + set
+                  cardlist.total_cards + " cards were found with set code " + set
                 );
                 let interval = setInterval(
                   function (cards) {
