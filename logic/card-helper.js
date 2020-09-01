@@ -1,8 +1,30 @@
 const _ = require("lodash");
+const logging = require("./common/logging");
 
 module.exports = {
-  generateDescriptionText: generateDescriptionText,
+    generateCardMessage: generateCardMessage,
 };
+
+function generateCardMessage(card) {
+    let cardName = card.name;
+    logging.Log("Sending " + cardName + " to channel.");
+
+    let cardCost = card.mana_cost
+      ? card.mana_cost.replace(new RegExp("[{}]", "g"), "")
+      : "";
+    let cardText = generateDescriptionText(card);
+
+    // Construct the discord message
+    let message =
+          "**" +
+          cardName +
+          "** - " +
+          cardCost +
+          "\n" +
+          cardText
+
+    return message;
+}
 
 // Generate the description of a card
 // Adapted version from github.com/NoxxFlame/MTG-Spoilers-Discord-bot
@@ -43,6 +65,10 @@ function generateDescriptionText(card) {
     description.push(ptToString(card));
   }
 
+    if (card.image_uris) {
+        description.push(getImageUrl(card.image_uris));
+    }
+
   if (card.card_faces) {
     // split cards are special
     card.card_faces.forEach((face) => {
@@ -55,9 +81,28 @@ function generateDescriptionText(card) {
       if (face.power) {
         description.push(ptToString(face));
       }
+      description.push(getImageUrl(face.image_uris));
       description.push("");
     });
   }
 
   return description.join("\n");
+}
+
+function getImageUrl(imageUris) {
+    let cardImageUrls = [];
+    if (imageUris.normal) {
+        cardImageUrls.push(imageUris.normal);
+      }
+      else if (imageUris.large) {
+        cardImageUrls.push(imageUris.large);
+      }
+      else if (imageUris.small) {
+        cardImageUrls.push(imageUris.small);
+      }
+      else if (imageUris.png) {
+        cardImageUrls.push(imageUris.png);
+      }
+
+      return cardImageUrls;
 }

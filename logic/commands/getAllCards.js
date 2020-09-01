@@ -57,30 +57,9 @@ module.exports = {
                       logging.Log("Done with sending cards to channel.");
                       clearInterval(interval);
                     } else {
-                      // Get all relevant data from the card
-                      let card = cards.pop();
-                      let cardName = card.name;
-                      logging.Log("Sending " + cardName + " to channel.");
-                      let cardImageUrl = card.image_uris
-                        ? card.image_uris.normal
-                        : "";
-                      let cardCost = card.mana_cost
-                        ? card.mana_cost.replace(new RegExp("[{}]", "g"), "")
-                        : "";
-                      let cardText = cardHelper.generateDescriptionText(card);
-
-                      // Construct the discord message
-                      let message =
-                        "**" +
-                        cardName +
-                        "** - " +
-                        cardCost +
-                        "\n" +
-                        cardText +
-                        "\n";
-                      message = message + cardImageUrl;
-
-                      channel.send(message);
+                        let card = cards.pop();
+                        let message = cardHelper.generateCardMessage(card);
+                        channel.send(message);
                     }
                   },
                   1000,
