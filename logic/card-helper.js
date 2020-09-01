@@ -7,7 +7,7 @@ module.exports = {
 
 function generateCardMessage(card) {
     let cardName = card.name;
-    logging.Log("Sending " + cardName + " to channel.");
+    logging.Log(`Sending ${cardName} to channel.`);
 
     let cardCost = card.mana_cost
       ? card.mana_cost.replace(new RegExp("[{}]", "g"), "")
@@ -15,13 +15,7 @@ function generateCardMessage(card) {
     let cardText = generateDescriptionText(card);
 
     // Construct the discord message
-    let message =
-          "**" +
-          cardName +
-          "** - " +
-          cardCost +
-          "\n" +
-          cardText
+    let message = `**${cardName}** - ${cardCost}\n${cardText}`;
 
     return message;
 }
@@ -30,11 +24,7 @@ function generateCardMessage(card) {
 // Adapted version from github.com/NoxxFlame/MTG-Spoilers-Discord-bot
 function generateDescriptionText(card) {
   const ptToString = (card) =>
-    "**" +
-    card.power.replace(/\*/g, "\\*") +
-    "/" +
-    card.toughness.replace(/\*/g, "\\*") +
-    "**";
+    `**${card.power.replace(/\*/g, "\\*")}/${card.toughness.replace(/\*/g, "\\*")}**`;
 
   const description = [];
   if (card.type_line) {
@@ -52,12 +42,12 @@ function generateDescriptionText(card) {
 
   if (card.flavor_text) {
     // flavor text in italics
-    description.push("_" + card.flavor_text + "_");
+    description.push(`_${card.flavor_text}_`);
   }
 
   if (card.loyalty) {
     // bold loyalty
-    description.push("**Loyalty: " + card.loyalty + "**");
+    description.push(`**Loyalty: ${card.loyalty}**`);
   }
 
   if (card.power) {
@@ -72,7 +62,7 @@ function generateDescriptionText(card) {
   if (card.card_faces) {
     // split cards are special
     card.card_faces.forEach((face) => {
-      description.push("**" + face.type_line + "**");
+      description.push(`**${face.type_line}**`);
       if (face.oracle_text) {
         description.push(
           face.oracle_text.replace(/[()]/g, (m) => (m === "(" ? "_(" : ")_"))

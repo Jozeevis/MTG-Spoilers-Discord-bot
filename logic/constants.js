@@ -1,9 +1,9 @@
 var path = require("path");
 var appDir = path.dirname(require.main.filename);
 
-const DATADIRECTORY = appDir + "/data";
-const SETTINGSPATH = DATADIRECTORY + "/settings.json";
-const WATCHEDSETCODESPATH = DATADIRECTORY + "/watchedsetcodes.json";
+const DATADIRECTORY = `${appDir}/data`;
+const SETTINGSPATH = `${DATADIRECTORY}/settings.json`;
+const WATCHEDSETCODESPATH = `${DATADIRECTORY}/watchedsetcodes.json`;
 const BASICLANDNAMES = ["plains", "island", "swamp", "mountain", "forest"];
 
 module.exports = {

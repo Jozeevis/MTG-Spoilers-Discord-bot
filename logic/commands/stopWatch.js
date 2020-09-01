@@ -5,13 +5,8 @@ const dataIO = require("../data-io");
 
 module.exports = {
   stopWatch: function (channel, set) {
-    logging.Log("checking spoilerwatch for set " + set + ".");
-    logging.Log(
-      "Checking if set matches with " +
-        set +
-        " and channel matches with " +
-        channel.id
-    );
+    logging.Log(`Checking spoilerwatch for set ${set}.`);
+    logging.Log(`Checking if set matches with ${set} and channel matches with ${channel.id}`);
     // Check if set is watched in the current channel
     if (
       watchedSetcodes &&
@@ -19,8 +14,8 @@ module.exports = {
         watchedset.setCode == set && watchedset.channelID == channel.id;
       })
     ) {
-      logging.Log("Stopping spoilerwatch for set " + set + ".");
-      channel.send("Stopping spoilerwatch for set " + set + ".");
+      logging.Log(`Stopping spoilerwatch for set ${set}.`);
+      channel.send(`Stopping spoilerwatch for set ${set}.`);
       // Find the timeout for this set and channel
       savedIntervals.find((o, i) => {
         if (o.setcode == set && o.channel == channel.id) {
@@ -36,9 +31,7 @@ module.exports = {
       });
       dataIO.saveWatchedSets();
     } else {
-      channel.send(
-        "No spoilerwatch for set " + set + " is running in this channel."
-      );
+      channel.send(`No spoilerwatch for set ${set} is running in this channel.`);
     }
   },
 };

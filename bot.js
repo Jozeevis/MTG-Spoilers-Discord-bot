@@ -20,9 +20,7 @@ try {
 //When bot is ready
 bot.on("ready", function () {
   logging.Log("Connected!");
-  logging.Log(
-    "Logged in as: " + bot.user.username + " - (" + bot.user.id + ")"
-  );
+  logging.Log(`Logged in as: ${bot.user.username} - (${bot.user.id})`);
 
   // Initialize savedIntervals and watchedSetcodes
   global.savedIntervals = [];
@@ -92,7 +90,7 @@ bot.on("message", async (message) => {
           break;
       }
     } catch (error) {
-      logging.Log("UNCAUGHT ERROR: " + error);
+      logging.Error(`(UNCAUGHT) ${error}`);
       message.channel.send("Something went wrong.");
     }
   }
@@ -100,7 +98,7 @@ bot.on("message", async (message) => {
 
 // Reconnect if the bot is disconnected gracefully
 bot.on("disconnect", function (errMsg, code) {
-  logging.Log("ERROR code " + code + ": " + errMsg);
+  logging.Error(`code ${code} : ${errMsg}`);
   if (code === 1000) {
     bot.connect();
   }

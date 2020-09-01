@@ -19,47 +19,41 @@ module.exports = {
         fs.writeFile(fileName, "[]", (err) => {
           if (err) {
             logging.Log("Something went wrong with writing new data file.");
-            logging.Log("ERROR: " + err);
+            logging.Error(err);
           }
-          logging.Log("Successfully written to file " + fileName + ".");
+          logging.Log(`Successfully written to file ${fileName}.`);
         });
       } else {
         // If data file does exist, try to read it
         try {
           fs.readFile(fileName, function (err, buf) {
             if (err) {
-              logging.Log(
-                "Something went wrong with reading existing saved file."
-              );
-              logging.Log("ERROR: " + err);
+              logging.Log("Something went wrong with reading existing saved file.");
+              logging.Error(err);
             }
             savedCardlist = JSON.parse(buf);
-            logging.Log("Successfully read file " + fileName + ".");
+            logging.Log(`Successfully read file ${fileName}.`);
           });
         } catch (error) {
-          logging.Log(
-            "Something went wrong with parsing data from existing saved file."
-          );
-          logging.Log("ERROR: " + error);
+          logging.Log("Something went wrong with parsing data from existing saved file.");
+          logging.Error(error);
           return;
         }
       }
 
       if (verbose) {
-        let message = "Trying to get newly spoiled cards from set with code " + set;
+        let message = `Trying to get newly spoiled cards from set with code ${set}`;
         if (ignoreBasics != false) {
             message += " (excluding basic lands)";
         }
-        channel.send(message + "...");
+        channel.send(`${message}...`);
       }
 
       // Make a request to the Scryfall api
       const https = require("https");
       https
         .get(
-          "https://api.scryfall.com/cards/search?order=spoiled&q=e%3A" +
-            set +
-            "&unique=prints",
+          `https://api.scryfall.com/cards/search?order=spoiled&q=e%3A${set}&unique=prints`,
           (resp) => {
             let data = "";
 
@@ -75,10 +69,8 @@ module.exports = {
                 // Parse the data in the response
                 cardlist = JSON.parse(data);
               } catch (error) {
-                logging.Log(
-                  "Something went wrong with parsing data from Scryfall."
-                );
-                logging.Log("ERROR:" + error);
+                logging.Log("Something went wrong with parsing data from Scryfall.");
+                logging.Error(error);
                 return;
               }
 
@@ -103,19 +95,13 @@ module.exports = {
 
                 // If new list is empty, no new cards were found
                 if (newCardlist.length <= 0) {
-                  logging.Log("No new cards were found with set code " + set);
+                  logging.Log(`No new cards were found with set code ${set}`);
                   if (verbose) {
-                    channel.send(
-                      "No new cards were found with set code " + set + "."
-                    );
+                    channel.send(`No new cards were found with set code ${set}.`);
                   }
                 } else {
                   // If new list wasn't empty, send one of the new cards to the channel every second
-                  logging.Log(
-                    newCardlist.length +
-                      " new cards were found with set code " +
-                      set
-                  );
+                  logging.Log(`${newCardlist.length} new cards were found with set code ${set}`);
                   let interval = setInterval(
                     function (cards) {
                       if (cards.length <= 0) {
@@ -138,34 +124,27 @@ module.exports = {
                     fs.writeFile(fileName, savedCardlistJSON, function (err) {
                       if (err) {
                         logging.Log("Something went wrong with saving file.");
-                        logging.Log("ERROR: " + err);
+                        logging.Error(err);
                       }
                       logging.Log("New card list has succesfully been saved!");
                     });
                   } catch (error) {
                     logging.Log("Something went wrong with saving new data.");
-                    logging.Log("ERROR: " + error);
+                    logging.Error(error);
                     return;
                   }
                 }
               } else {
                 if (verbose) {
-                  channel.send(
-                    "Did not find any card with set code " + set + "."
-                  );
+                  channel.send(`Did not find any card with set code ${set}.`);
                 }
               }
             });
           }
         )
         .on("error", (err) => {
-          logging.Log("Error: " + err.message);
-          channel.send(
-            "Error trying to get cards with set code " +
-              set +
-              ".\n" +
-              "Check the console for more details."
-          );
+            logging.Error(err.message);
+            channel.send(`Error trying to get cards with set code ${set}.\nCheck the console for more details.`);
         });
     });
   },

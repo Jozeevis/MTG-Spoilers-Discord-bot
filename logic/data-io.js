@@ -14,15 +14,11 @@ module.exports = {
       JSON.stringify(watchedSetcodes),
       (err) => {
         if (err) {
-          logging.Log(
-            "Something went wrong with writing to watchedsetcodes.json"
-          );
-          logging.Log("ERROR: " + err);
+          logging.Log("Something went wrong with writing to watchedsetcodes.json");
+          logging.Error(err);
           return;
         }
-        logging.Log(
-          "Successfully written to file " + constants.WATCHEDSETCODESPATH + "."
-        );
+        logging.Log(`Successfully written to file ${constants.WATCHEDSETCODESPATH}.`);
       }
     );
   },
@@ -35,22 +31,18 @@ module.exports = {
     if (!fs.existsSync(constants.WATCHEDSETCODESPATH)) {
       fs.writeFile(constants.WATCHEDSETCODESPATH, "[]", function (err) {
         if (err) {
-          logging.Log(
-            "Something went wrong with creating new empty watchedsetcodes.json"
-          );
-          logging.Log("ERROR: " + err);
+          logging.Log("Something went wrong with creating new empty watchedsetcodes.json");
+          logging.Error(err);
         }
       });
     }
     fs.readFile(constants.WATCHEDSETCODESPATH, function (err, buf) {
       if (err) {
         logging.Log("Something went wrong with reading watchedsetcodes.json");
-        logging.Log("ERROR: " + err);
+        logging.Error(err);
       }
       watchedSetcodes = JSON.parse(buf);
-      logging.Log(
-        "Successfully read file " + constants.WATCHEDSETCODESPATH + "."
-      );
+      logging.Log(`Successfully read file ${constants.WATCHEDSETCODESPATH}.`);
       spoilerWatches.startSpoilerWatches();
     });
     return;
@@ -68,10 +60,8 @@ module.exports = {
         '{"prefix":"' + defaultPrefix + '"}',
         function (err) {
           if (err) {
-            logging.Log(
-              "Something went wrong with creating new default settings file"
-            );
-            logging.Log("ERROR: " + err);
+            logging.Log("Something went wrong with creating new default settings file");
+            logging.Error(err);
           }
         }
       );
@@ -79,10 +69,10 @@ module.exports = {
       fs.readFile(constants.SETTINGSPATH, function (err, buf) {
         if (err) {
           logging.Log("Something went wrong with reading settings.json");
-          logging.Log("ERROR: " + err);
+          logging.Error(err);
         }
         let settings = JSON.parse(buf);
-        logging.Log("Successfully read file " + constants.SETTINGSPATH + ".");
+        logging.Log(`Successfully read file ${constants.SETTINGSPATH}.`);
         newPrefix = settings.prefix;
       });
     }
@@ -101,7 +91,7 @@ module.exports = {
         function (err) {
           if (err) {
             logging.Log("Something went wrong with creating new settings file");
-            logging.Log("ERROR: " + err);
+            logging.Error(err);
           }
         }
       );
@@ -109,7 +99,7 @@ module.exports = {
       fs.readFile(constants.SETTINGSPATH, function (err, buf) {
         if (err) {
           logging.Log("Something went wrong with reading settings.json");
-          logging.Log("ERROR: " + err);
+          logging.Error(err);
         }
         let settings = JSON.parse(buf);
         settings.prefix = newPrefix;
@@ -118,10 +108,8 @@ module.exports = {
           JSON.stringify(settings),
           function (err) {
             if (err) {
-              logging.Log(
-                "Something went wrong with updating prefix in the settings file"
-              );
-              logging.Log("ERROR: " + err);
+              logging.Log("Something went wrong with updating prefix in the settings file");
+              logging.Error(err);
             }
           }
         );

@@ -9,12 +9,7 @@ module.exports = {
   startSpoilerWatch: function (channel, set) {
     return setInterval(
       function (set) {
-        logging.Log(
-          "Start looking for new cards in set " +
-            set +
-            " for channel " +
-            channel.id
-        );
+        logging.Log(`Start looking for new cards in set ${set} for channel ${channel.id}`);
         getNewCardsCommands.getNewCards(channel, set);
       },
       constants.SPOILERWATCHINTERVALTIME,
@@ -24,16 +19,11 @@ module.exports = {
 
   // Start the spoiler watch intervals for all combinations in the saved file
   startSpoilerWatches: function () {
-    logging.Log("Watched sets: " + JSON.stringify(watchedSetcodes));
+    logging.Log(`Watched sets: ${JSON.stringify(watchedSetcodes)}`);
     for (let i = 0; i < watchedSetcodes.length; i++) {
       let watchedSet = watchedSetcodes[i];
-      logging.Log("Watched set: " + JSON.stringify(watchedSet));
-      logging.Log(
-        "Start looking for new cards in set " +
-          watchedSet.setCode +
-          " for channel " +
-          watchedSet.channelID
-      );
+      logging.Log(`Watched set: ${JSON.stringify(watchedSet)}`);
+      logging.Log(`Start looking for new cards in set ${watchedSet.setCode} for channel ${watchedSet.channelID}`)
       let channel = bot.channels.cache.get(watchedSet.channelID);
       let interval = module.exports.startSpoilerWatch(
         channel,

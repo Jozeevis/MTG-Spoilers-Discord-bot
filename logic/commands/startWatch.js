@@ -10,11 +10,11 @@ module.exports = {
     //Add the combination to the watched sets and save this
     watchedSetcodes.push({ setCode: set, channelID: channel.id });
     dataIO.saveWatchedSets();
-    logging.Log("Starting spoilerwatch for set " + set + ".");
-    channel.send("Starting spoilerwatch for set " + set + ".");
+    logging.Log(`Starting spoilerwatch for set ${set}.`);
+    channel.send(`Starting spoilerwatch for set ${set}.`);
 
     //Immediately look for new cards
-    logging.Log("Start looking for new cards on " + Date.now());
+    logging.Log(`Start looking for new cards on ${Date.now()}`);
     getNewCardsCommand.getNewCards(channel, set);
     //Start the interval to look for new cards
     let interval = spoilerWatches.startSpoilerWatch(channel, set);
