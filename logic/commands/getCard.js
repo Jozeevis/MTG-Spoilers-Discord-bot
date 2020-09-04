@@ -35,7 +35,14 @@ module.exports = {
                 let message = cardHelper.generateCardMessage(card);
                 channel.send(message);
             } else {
-              channel.send(`Did not find any card with name like ${name}.`);
+                if (card.object == "error") {
+                    if (card.type == "ambiguous") {
+                        channel.send(`Found multiple cards with name like ${name}. Please try to make a more specific query by adding more words.`);
+                    }
+                    else {
+                        channel.send(`Did not find any card with name like ${name}.`);
+                    }
+                }
             }
           });
         }

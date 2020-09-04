@@ -54,7 +54,19 @@ bot.on("message", async (message) => {
             break;
         //Tries to find a card with name like the given name and send it in the current channel
         case "get":
-            commands.getCard(message.channel, arg2);
+            var queryIndex = message.content.indexOf(" ") + 1;
+            if (queryIndex > 0) {
+                var query = message.content.substring(queryIndex);
+                if (query) {
+                    commands.getCard(message.channel, query);
+                }
+                else {
+                    message.channel.send('You have to supply a query, like so:\n!get Sonic Assault');
+                }
+            }
+            else {
+                message.channel.send('You have to supply a query, like so:\n!get Sonic Assault');
+            }
             break;
         //Get all cards from the given set and send them in the current channel
         case "getall":
