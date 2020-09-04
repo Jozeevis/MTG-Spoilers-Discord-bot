@@ -48,6 +48,14 @@ bot.on("message", async (message) => {
       }
 
       switch (cmd.toLowerCase()) {
+        //Response test
+        case "ping":
+            message.channel.send('Pong!');
+            break;
+        //Tries to find a card with name like the given name and send it in the current channel
+        case "get":
+            commands.getCard(message.channel, arg2);
+            break;
         //Get all cards from the given set and send them in the current channel
         case "getall":
         case "getallcards":

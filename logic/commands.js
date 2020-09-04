@@ -4,8 +4,10 @@ const startWatch = require("./commands/startWatch");
 const stopWatch = require("./commands/stopWatch");
 const clear = require("./commands/clear");
 const prefixCommand = require("./commands/prefix");
+const getCard = require("./commands/getCard");
 
 module.exports = {
+  getCard: getCard.getCard,
   getAllCards: getAllCards.getAllCards,
   getNewCards: getNewCards.getNewCards,
   startWatch: startWatch.startWatch,
