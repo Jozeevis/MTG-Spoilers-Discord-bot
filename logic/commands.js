@@ -5,6 +5,7 @@ const stopWatch = require("./commands/stopWatch");
 const clear = require("./commands/clear");
 const prefixCommand = require("./commands/prefix");
 const getCard = require("./commands/getCard");
+const help = require("./commands/help");
 
 module.exports = {
   getCard: getCard.getCard,
@@ -14,4 +15,5 @@ module.exports = {
   stopWatch: stopWatch.stopWatch,
   clear: clear.clear,
   prefix: prefixCommand.prefixCommand,
+  help: help.help,
 };

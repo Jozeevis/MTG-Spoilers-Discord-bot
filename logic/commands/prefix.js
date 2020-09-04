@@ -7,6 +7,6 @@ module.exports = {
     let oldPrefix = prefix;
     dataIO.writePrefix(newPrefix);
     prefix = newPrefix;
-    channel.send(`Changed prefix from ${oldPrefix} to ${newPrefix}.`);
+    channel.send(`Changed prefix from '${oldPrefix}' to '${newPrefix}'.`);
   },
 };
