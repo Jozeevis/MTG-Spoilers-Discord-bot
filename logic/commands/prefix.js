@@ -1,12 +1,13 @@
-const dataIO = require("../data-io");
+import { writePrefix } from '../data-io.js';
 
 /* global prefix:writable */
 
-module.exports = {
-  prefixCommand: function (channel, newPrefix) {
+/**
+ * Changes the prefix for the bot to the given new prefix
+ */
+export function prefixCommand(channel, newPrefix) {
     let oldPrefix = prefix;
-    dataIO.writePrefix(newPrefix);
+    writePrefix(newPrefix);
     prefix = newPrefix;
     channel.send(`Changed prefix from '${oldPrefix}' to '${newPrefix}'.`);
-  },
-};
+}

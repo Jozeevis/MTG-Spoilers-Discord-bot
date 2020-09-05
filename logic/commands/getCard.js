@@ -1,55 +1,49 @@
-const logging = require("../common/logging");
-const cardHelper = require("../card-helper");
+import https from 'https';
 
-module.exports = {
-  // Finds all cards in the given set that and post them to the given channel
-  getCard: function (channel, name) {
+import { Log } from '../common/logging.js';
+import { generateCardMessage } from '../card-helper.js';
+
+/**
+ * Tries to find card with the given name and post it to the given channel
+ * Uses Scryfall fuzzy search
+ */
+export function getCard(channel, name) {
     // Make a request to the Scryfall api
-    const https = require("https");
-    https
-      .get(
-        `https://api.scryfall.com/cards/named?fuzzy=${name}`,
-        (resp) => {
-          let data = "";
+    https.get(`https://api.scryfall.com/cards/named?fuzzy=${name}`, (resp) => {
+        let data = '';
 
-          // A chunk of data has been received.
-          resp.on("data", (chunk) => {
+        // A chunk of data has been received.
+        resp.on('data', (chunk) => {
             data += chunk;
-          });
+        });
 
-          // The whole response has been received.
-          resp.on("end", () => {
+        // The whole response has been received.
+        resp.on('end', () => {
             let card = null;
             try {
-              // Parse the data in the response
-              card = JSON.parse(data);
+                // Parse the data in the response
+                card = JSON.parse(data);
             } catch (error) {
-              logging.Log("Something went wrong with parsing data from Scryfall.");
-              logging.Error(error);
-              return;
+                Log('Something went wrong with parsing data from Scryfall.');
+                Error(error);
+                return;
             }
-            if (
-              card &&
-              card.object == "card"
-            ) {
-                let message = cardHelper.generateCardMessage(card);
+            if (card && card.object == 'card') {
+                let message = generateCardMessage(card);
                 channel.send(message);
             } else {
-                if (card.object == "error") {
-                    if (card.type == "ambiguous") {
+                if (card.object == 'error') {
+                    if (card.type == 'ambiguous') {
                         channel.send(`Found multiple cards with name like ${name}. Please try to make a more specific query by adding more words.`);
-                    }
-                    else {
+                    } else {
                         channel.send(`Did not find any card with name like ${name}.`);
                     }
                 }
             }
-          });
-        }
-      )
-      .on("error", (err) => {
-        logging.Error(err.message);
-        channel.send(`Error trying to get card with name like ${name}.\nCheck the console for more details.`);
-      });
-  },
-};
+        });
+    })
+        .on('error', (err) => {
+            Error(err.message);
+            channel.send(`Error trying to get card with name like ${name}.\nCheck the console for more details.`);
+        });
+}

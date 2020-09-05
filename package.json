@@ -4,6 +4,7 @@
     "description": "A bot to automatically post spoilers for Magic the Gathering in Discord",
     "main": "bot.js",
     "author": "Jozeevis",
+    "type": "module",
     "dependencies": {
         "discord.js": "^12.2.0",
         "lodash": "^4.17.19"

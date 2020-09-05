@@ -1,7 +1,7 @@
 # Folder containing the data for this instance of the bot: client-specific
 data
-# File containing the client secret, not sure if this should be shared?
-auth.json
+# File containing the client secret, should not be shared
+auth.js
 ### NODE
 # Logs
 logs

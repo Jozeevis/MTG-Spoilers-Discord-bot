@@ -1,41 +1,43 @@
-const constants = require("./constants");
-const logging = require("./common/logging");
-const getNewCardsCommands = require("./commands/getNewCards");
+import constants from './constants.js';
+import { Log } from './common/logging.js';
+import { getNewCards } from './commands.js';
 
 /* global bot, watchedSetcodes, savedIntervals  */
 
-module.exports = {
-  //Start the interval to look for new cards for the given set and channelID
-  startSpoilerWatch: function (channel, set) {
+/**
+ * Start the interval to look for new cards for the given set and channelID
+ */
+export function startSpoilerWatch(channel, set) {
     return setInterval(
-      function (set) {
-        logging.Log(`Start looking for new cards in set ${set} for channel ${channel.id}`);
-        getNewCardsCommands.getNewCards(channel, set);
-      },
-      constants.SPOILERWATCHINTERVALTIME,
-      set
+        function (set) {
+            Log(`Start looking for new cards in set ${set} for channel ${channel.id}`);
+            getNewCards(channel, set);
+        },
+        constants.SPOILERWATCHINTERVALTIME,
+        set
     );
-  },
+}
 
-  // Start the spoiler watch intervals for all combinations in the saved file
-  startSpoilerWatches: function () {
-    logging.Log(`Watched sets: ${JSON.stringify(watchedSetcodes)}`);
+/**
+ * Starts spoiler watches for all saved watched setcodes
+ */
+export function startSpoilerWatches() {
+    Log(`Watched sets: ${JSON.stringify(watchedSetcodes)}`);
     for (let i = 0; i < watchedSetcodes.length; i++) {
-      let watchedSet = watchedSetcodes[i];
-      logging.Log(`Watched set: ${JSON.stringify(watchedSet)}`);
-      logging.Log(`Start looking for new cards in set ${watchedSet.setCode} for channel ${watchedSet.channelID}`)
-      let channel = bot.channels.cache.get(watchedSet.channelID);
-      let interval = module.exports.startSpoilerWatch(
-        channel,
-        watchedSet.setCode
-      );
-      savedIntervals.push({
-        setcode: watchedSet.setCode,
-        channel: channel.id,
-        interval: interval,
-      });
-      getNewCardsCommands.getNewCards(channel, watchedSet.setCode);
+        let watchedSet = watchedSetcodes[i];
+        Log(`Watched set: ${JSON.stringify(watchedSet)}`);
+        Log(`Start looking for new cards in set ${watchedSet.setCode} for channel ${watchedSet.channelID}`)
+        let channel = bot.channels.cache.get(watchedSet.channelID);
+        let interval = startSpoilerWatch(
+            channel,
+            watchedSet.setCode
+        );
+        savedIntervals.push({
+            setcode: watchedSet.setCode,
+            channel: channel.id,
+            interval: interval,
+        });
+        getNewCards(channel, watchedSet.setCode);
     }
     return;
-  },
-};
+}
