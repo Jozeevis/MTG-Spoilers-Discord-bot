@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 
-import auth from './logic/auth/auth.js';
+import auth from './auth.js';
 
 import constants from './logic/constants.js';
 import { readWatchedSets, readPrefix } from './logic/data-io.js';
