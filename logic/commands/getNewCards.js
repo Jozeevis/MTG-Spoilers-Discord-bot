@@ -2,7 +2,7 @@ import fs from 'fs';
 import https from 'https';
 
 import constants from '../constants.js';
-import { Log, Error } from '../common/Logging.js';
+import { Log, Error } from '../common/logging.js';
 import { getFilename } from '../common/io.js';
 import { generateCardMessage } from '../card-helper.js';
 

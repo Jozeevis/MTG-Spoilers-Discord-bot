@@ -1,7 +1,6 @@
-import { dirname } from "path";
-import { fileURLToPath } from 'url';
+import path from "path";
 
-var appDir = dirname(fileURLToPath(import.meta.url));
+var appDir = path.resolve('./');
 
 const DATADIRECTORY = `${appDir}/data`;
 const SETTINGSPATH = `${DATADIRECTORY}/settings.json`;
