@@ -2,42 +2,51 @@ import Discord from 'discord.js';
 
 import auth from './auth.js';
 
-import constants from './logic/constants.js';
-import { readWatchedSets, readPrefix } from './logic/data-io.js';
+import constants from './logic/common/constants.js';
+import { readWatchedSets, readPrefix } from './logic/common/io.js';
 import * as commands from './logic/commands.js';
-import { Log } from './logic/common/logging.js';
+import { Log, Error } from './logic/common/logging.js';
 import * as permissions from './logic/common/permissions.js';
+import { IWatchedSetcode, ISavedInterval } from './models';
+
+export interface Global extends NodeJS.Global {
+    bot: Discord.Client,
+    savedIntervals: ISavedInterval[],
+    watchedSetcodes: IWatchedSetcode[],
+    prefix: string,
+}
+declare var global: Global;
 
 // Initialize Discord Bot
 Log("Initializing bot...");
 global.bot = new Discord.Client(); /* global bot */
 
 try {
-    bot.login(auth.token);
+    global.bot.login(auth.token);
 } catch (err) {
-    Log(err);
+    Error(err);
 }
 
 //When bot is ready
-bot.on("ready", function () {
+global.bot.on("ready", function () {
     Log("Connected!");
-    Log(`Logged in as: ${bot.user.username} - (${bot.user.id})`);
+    Log(`Logged in as: ${global.bot.user?.username} - (${global.bot.user?.id})`);
 
     // Initialize savedIntervals and watchedSetcodes
     global.savedIntervals = [];
-    global.watchedSetcodes = readWatchedSets();
     global.prefix = readPrefix(
         constants.BOTDEFAULTPREFIX
     ); /* global prefix */
+    readWatchedSets();
 });
 
 //When bot reads message
-bot.on("message", async (message) => {
+global.bot.on("message", async (message) => {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with the specified prefix
-    if (message.content.substring(0, prefix.length) == prefix) {
+    if (message.content.substring(0, global.prefix.length) == global.prefix) {
         try {
-            let args = message.content.substring(prefix.length).split(" ");
+            let args = message.content.substring(global.prefix.length).split(" ");
             let cmd = args[0];
 
             args = args.splice(1);
@@ -59,48 +68,50 @@ bot.on("message", async (message) => {
                     if (queryIndex > 0) {
                         var query = message.content.substring(queryIndex);
                         if (query) {
-                            commands.getCard(message.channel, query);
+                            commands.getCardCommand(message.channel, query);
                         }
                         else {
-                            message.channel.send(`You have to supply a query, like so:\n${prefix}get Sonic Assault`);
+                            message.channel.send(`You have to supply a query, like so:\n${global.prefix}get Sonic Assault`);
                         }
                     }
                     else {
-                        message.channel.send(`You have to supply a query, like so:\n${prefix}get Sonic Assault`);
+                        message.channel.send(`You have to supply a query, like so:\n${global.prefix}get Sonic Assault`);
                     }
                     break;
                 // Get all cards from the given set and send them in the current channel
                 case "getall":
                 case "getallcards":
                     if (permissions.checkPermissions(message)) {
-                        commands.getAllCards(message.channel, arg2, arg3);
+                        let bool = arg3 === "true";
+                        commands.getAllCardsCommand(message.channel, arg2, bool);
                     }
                     break;
                 // Get all new cards from the given set and send them in the current channel
                 case "getnew":
                 case "getnewcards":
                     if (permissions.checkPermissions(message)) {
-                        commands.getNewCards(message.channel, arg2, true, arg3);
+                        let bool = arg3 === "true";
+                        commands.getNewCardsCommand(message.channel, arg2, true, bool);
                     }
                     break;
                 // Start spoilerwatch for the given set ID in the current channel
                 case "watch":
                 case "startwatch":
                     if (permissions.checkPermissions(message)) {
-                        commands.startWatch(message.channel, arg2);
+                        commands.startWatchCommand(message.channel, arg2);
                     }
                     break;
                 // Stop spoilerwatch for the given set ID in the current channel
                 case "unwatch":
                 case "stopwatch":
                     if (permissions.checkPermissions(message)) {
-                        commands.stopWatch(message.channel, arg2);
+                        commands.stopWatchCommand(message.channel, arg2);
                     }
                     break;
                 // Clears the saved data for the given set in the current channel
                 case "clear":
                     if (permissions.checkPermissions(message)) {
-                        commands.clear(message.channel, arg2);
+                        commands.clearCommand(message.channel, arg2);
                     }
                     break;
                 // Changes the prefix the bot uses for its commands
@@ -111,10 +122,10 @@ bot.on("message", async (message) => {
                     break;
                 // Sends a list of all possible commands
                 case "help":
-                    commands.help(message.channel, prefix);
+                    commands.helpCommand(message.channel, global.prefix);
                     break;
                 default:
-                    message.channel.send(`No command ${cmd} found, please check your spelling or use ${prefix}help for a list of possible commands.`);
+                    message.channel.send(`No command ${cmd} found, please check your spelling or use ${global.prefix}help for a list of possible commands.`);
                     break;
             }
         } catch (error) {
@@ -125,9 +136,13 @@ bot.on("message", async (message) => {
 });
 
 // Reconnect if the bot is disconnected gracefully
-bot.on("disconnect", function (errMsg, code) {
+global.bot.on("disconnect", function (errMsg, code) {
     Error(`code ${code} : ${errMsg}`);
     if (code === 1000) {
-        bot.connect();
+        try {
+            global.bot.login(auth.token);
+        } catch (err) {
+            Error(err);
+        }
     }
 });

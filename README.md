@@ -25,16 +25,18 @@ Will send a message with all possible commands and usages.
 ## File Structure
 ```
 * root parent directory
-/ * [project root]
 / * [node_modules]
-/ * auth.js
+/ * src
+/ / * [Code]
+/ / * auth.ts
+/ / * bot.ts
 / * data
 / / * settings.json
 / / * watchedsetcodes.json
 / / * [channelId]-[setCode]-data.json files
 ```
 
-[project root] here contains the root of this git project, so files like bot.js go on this level. Auth.js is the file containing your token to connect your bot to the Discord API, which. The /data directory contains all data files the bot needs to function, and these will all be generated automatically when the bot is running (including the data directory itself). Both auth.js and /data are gitignored.
+/src here contains the all the code of the project, so files like bot.ts go on this level. Auth.ts is the file containing your token to connect your bot to the Discord API. The /data directory contains all data files the bot needs to function, and these will all be generated automatically when the bot is running (including the data directory itself). Both auth.ts and /data are gitignored.
 
 ## Data files
 ### settings.json
