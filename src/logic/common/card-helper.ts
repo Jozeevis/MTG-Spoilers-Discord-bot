@@ -125,8 +125,8 @@ function powerToughnessToString(object: ICard | ICardFace): string {
         return '';
     }
 
-    let powerString = object.power.replace(/\*/g, '\\*');
-    let toughnessString = object.toughness.replace(/\*/g, '\\*');
+    let powerString = escape(object.power).replace(/\*/g, '\\*');
+    let toughnessString = escape(object.toughness).replace(/\*/g, '\\*');
 
     return `**${powerString}/${toughnessString}**`;
 }
