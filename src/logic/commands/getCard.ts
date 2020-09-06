@@ -2,12 +2,13 @@ import https from 'https';
 
 import { Log } from '../common/logging.js';
 import { generateCardMessage } from '../card-helper.js';
+import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
 
 /**
  * Tries to find card with the given name and post it to the given channel
  * Uses Scryfall fuzzy search
  */
-export function getCard(channel, name) {
+export function getCard(channel: TextChannel | DMChannel | NewsChannel, name: string) {
     // Make a request to the Scryfall api
     https.get(`https://api.scryfall.com/cards/named?fuzzy=${name}`, (resp) => {
         let data = '';

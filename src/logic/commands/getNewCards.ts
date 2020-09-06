@@ -5,14 +5,15 @@ import constants from '../constants.js';
 import { Log, Error } from '../common/logging.js';
 import { getFilename } from '../common/io.js';
 import { generateCardMessage } from '../card-helper.js';
+import { NewsChannel, TextChannel, DMChannel } from 'discord.js';
+import { ICard } from '../../models/card.js';
 
 /**
  * Finds all new cards in the given set that haven't been posted to the given channel yet and posts them there
  * @param {*} verbose If true, will send messages to the channel if no cards are found
  * @param {*} ignoreBasics If true, the standard basic lands will not be sent (plains, island, swamp, mountain, forest)
  */
-export function getNewCards(channel, set, verbose = false, ignoreBasics = true) {
-    ignoreBasics = ignoreBasics != 'false';
+export function getNewCards(channel: TextChannel | DMChannel | NewsChannel, set: string, verbose = false, ignoreBasics = true) {
     // Read which cards are already saved
     let fileName = getFilename(set, channel.id);
     let savedCardlist = JSON.parse("[]");
@@ -22,7 +23,7 @@ export function getNewCards(channel, set, verbose = false, ignoreBasics = true) 
             fs.writeFile(fileName, "[]", (err) => {
                 if (err) {
                     Log("Something went wrong with writing new data file.");
-                    Error(err);
+                    Error(err.message);
                 }
                 Log(`Successfully written to file ${fileName}.`);
             });
@@ -32,9 +33,9 @@ export function getNewCards(channel, set, verbose = false, ignoreBasics = true) 
                 fs.readFile(fileName, function (err, buf) {
                     if (err) {
                         Log("Something went wrong with reading existing saved file.");
-                        Error(err);
+                        Error(err.message);
                     }
-                    savedCardlist = JSON.parse(buf);
+                    savedCardlist = JSON.parse(buf.toString());
                     Log(`Successfully read file ${fileName}.`);
                 });
             } catch (error) {
@@ -78,18 +79,18 @@ export function getNewCards(channel, set, verbose = false, ignoreBasics = true) 
 
                         if (ignoreBasics) {
                             Log("Ignoring basic lands");
-                            cardlist.data = cardlist.data.filter((card) => {
+                            cardlist.data = cardlist.data.filter((card: ICard) => {
                                 return !constants.BASICLANDNAMES.includes(card.name.toLowerCase());
                             });
                         }
 
-                        let newCardlist = [];
+                        let newCardlist = new Array<ICard>();
                         if (cardlist && cardlist.object == "list" && cardlist.total_cards > 0) {
                             // For every card: check if it's already saved, otherwise at it to the new list
-                            cardlist.data.forEach(function (card) {
+                            cardlist.data.forEach(function (card: ICard) {
                                 let cardId = card.oracle_id;
 
-                                if (!savedCardlist.some((c) => c == cardId)) {
+                                if (!savedCardlist.some((c: string) => c == cardId)) {
                                     newCardlist.push(card);
                                     savedCardlist.push(cardId);
                                 }
@@ -126,7 +127,7 @@ export function getNewCards(channel, set, verbose = false, ignoreBasics = true) 
                                     fs.writeFile(fileName, savedCardlistJSON, function (err) {
                                         if (err) {
                                             Log("Something went wrong with saving file.");
-                                            Error(err);
+                                            Error(err.message);
                                         }
                                         Log("New card list has succesfully been saved!");
                                     });

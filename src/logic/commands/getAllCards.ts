@@ -3,13 +3,14 @@ import https from 'https';
 import { Log } from '../common/logging.js';
 import { generateCardMessage } from '../card-helper.js';
 import constants from '../constants.js';
+import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { ICard } from '../../models/card.js';
 
 /**
  * Finds all cards in the given set that and post them to the given channel
  * @param {*} ignoreBasics if true, will not post the standard basic lands (plains, island, swamp, mountain, forest)
  */
-export function getAllCards(channel, set, ignoreBasics = true) {
-    ignoreBasics = ignoreBasics != 'false';
+export function getAllCards(channel: TextChannel | DMChannel | NewsChannel, set: string, ignoreBasics = true) {
     let message = `Trying to get cards from set with code ${set}`;
     if (ignoreBasics != false) {
         message += ' (excluding basic lands)';
@@ -46,7 +47,7 @@ export function getAllCards(channel, set, ignoreBasics = true) {
 
                     if (ignoreBasics) {
                         Log('Ignoring basic lands');
-                        cardlist.data = cardlist.data.filter((card) => {
+                        cardlist.data = cardlist.data.filter((card: ICard) => {
                             return !constants.BASICLANDNAMES.includes(
                                 card.name.toLowerCase()
                             );

@@ -1,11 +1,14 @@
 import _ from 'lodash';
 
 import { Log } from './common/logging.js';
+import { ICard } from '../models/card.js';
+import { ICardImages } from '../models/card-images.js';
+import { ICardFace } from '../models/card-face.js';
 
 /**
  * Creates a formatted message describing the given card and returns it
  */
-export function generateCardMessage(card) {
+export function generateCardMessage(card: ICard) {
     let cardName = card.name;
     Log(`Sending ${cardName} to channel.`);
     return generateDescriptionText(card);
@@ -15,9 +18,9 @@ export function generateCardMessage(card) {
  * Generates the formatted text description of the given card
  * @author Original by NoxxFlame, adapted by Jozeevis
  */
-function generateDescriptionText(card) {
-    const ptToString = (card) =>
-        `**${card.power.replace(/\*/g, '\\*')}/${card.toughness.replace(
+function generateDescriptionText(card: ICard) {
+    const ptToString = (card: ICard | ICardFace) =>
+        `**${card.power?.replace(/\*/g, '\\*')}/${card.toughness?.replace(
             /\*/g,
             '\\*'
         )}**`;
@@ -33,19 +36,21 @@ function generateDescriptionText(card) {
         }
         description.push(nameLine);
 
-        if (card.type_line) {
+        if (card.printed_type_line || card.type_line) {
             // bold type line
             let type = `${card.printed_type_line || card.type_line}`;
             type += ` (${_.capitalize(card.rarity)})`;
             description.push(type);
         }
 
-        if (card.oracle_text) {
+        if (card.printed_text || card.oracle_text) {
             // reminder text in italics
             const text = card.printed_text || card.oracle_text;
-            description.push(
-                text.replace(/[()]/g, (m) => (m === '(' ? '_(' : ')_'))
-            );
+            if (text) {
+                description.push(
+                    text.replace(/[()]/g, (m: string) => (m === '(' ? '_(' : ')_'))
+                );
+            }
         }
 
         if (card.flavor_text) {
@@ -83,7 +88,6 @@ function generateDescriptionText(card) {
             description.push(nameLine);
 
             if (face.type_line) {
-                // bold type line
                 let type = `${face.printed_type_line || face.type_line}`;
                 type += ` (${_.capitalize(card.rarity)})`;
                 description.push(type);
@@ -91,7 +95,7 @@ function generateDescriptionText(card) {
 
             if (face.oracle_text) {
                 description.push(
-                    face.oracle_text.replace(/[()]/g, (m) =>
+                    face.oracle_text.replace(/[()]/g, (m: string) =>
                         m === '(' ? '_(' : ')_'
                     )
                 );
@@ -113,7 +117,7 @@ function generateDescriptionText(card) {
  * Returns url from the given imageUris object if a fitting one could be found
  * Prioritizes formats as follows: normal > large > small > png
  */
-function getImageUrl(imageUris) {
+function getImageUrl(imageUris: ICardImages) {
     if (imageUris.normal) {
         return imageUris.normal;
     } else if (imageUris.large) {
@@ -123,4 +127,5 @@ function getImageUrl(imageUris) {
     } else if (imageUris.png) {
         return imageUris.png;
     }
+    return '';
 }

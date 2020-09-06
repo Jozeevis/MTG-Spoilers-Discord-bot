@@ -1,10 +1,10 @@
+import { Global } from '../bot.js';
+declare var global: Global;
 import fs from 'fs';
 
 import constants from './constants.js';
 import { Log, Error } from './common/logging.js';
 import { startSpoilerWatches } from './spoilerWatches.js';
-
-/* global watchedSetcodes:writable */
 
 /**
  * Saves the array of watched sets and channel IDs to the data file
@@ -12,11 +12,11 @@ import { startSpoilerWatches } from './spoilerWatches.js';
 export function saveWatchedSets() {
     fs.writeFile(
         constants.WATCHEDSETCODESPATH,
-        JSON.stringify(watchedSetcodes),
+        JSON.stringify(global.watchedSetcodes),
         (err) => {
             if (err) {
                 Log("Something went wrong with writing to watchedsetcodes.json");
-                Error(err);
+                Error(err.message);
                 return;
             }
             Log(`Successfully written to file ${constants.WATCHEDSETCODESPATH}.`);
@@ -35,16 +35,16 @@ export function readWatchedSets() {
         fs.writeFile(constants.WATCHEDSETCODESPATH, "[]", function (err) {
             if (err) {
                 Log("Something went wrong with creating new empty watchedsetcodes.json");
-                Error(err);
+                Error(err.message);
             }
         });
     }
     fs.readFile(constants.WATCHEDSETCODESPATH, function (err, buf) {
         if (err) {
             Log("Something went wrong with reading watchedsetcodes.json");
-            Error(err);
+            Error(err.message);
         }
-        watchedSetcodes = JSON.parse(buf);
+        global.watchedSetcodes = JSON.parse(buf.toString());
         Log(`Successfully read file ${constants.WATCHEDSETCODESPATH}.`);
         startSpoilerWatches();
     });
@@ -55,7 +55,7 @@ export function readWatchedSets() {
  * Reads preferred prefix from the settings
  * @param {*} defaultPrefix The default prefix to save if no settings file has been made yet
  */
-export function readPrefix(defaultPrefix) {
+export function readPrefix(defaultPrefix: string) {
     let newPrefix = defaultPrefix;
     if (!fs.existsSync(constants.DATADIRECTORY)) {
         fs.mkdirSync(constants.DATADIRECTORY);
@@ -67,7 +67,7 @@ export function readPrefix(defaultPrefix) {
             function (err) {
                 if (err) {
                     Log("Something went wrong with creating new default settings file");
-                    Error(err);
+                    Error(err.message);
                 }
             }
         );
@@ -75,9 +75,9 @@ export function readPrefix(defaultPrefix) {
         fs.readFile(constants.SETTINGSPATH, function (err, buf) {
             if (err) {
                 Log("Something went wrong with reading settings.json");
-                Error(err);
+                Error(err.message);
             }
-            let settings = JSON.parse(buf);
+            let settings = JSON.parse(buf.toString());
             Log(`Successfully read file ${constants.SETTINGSPATH}.`);
             newPrefix = settings.prefix;
         });
@@ -88,7 +88,7 @@ export function readPrefix(defaultPrefix) {
 /**
  * Overwrites the current prefix in the settings data file with the given new prefix
  */
-export function writePrefix(newPrefix) {
+export function writePrefix(newPrefix: string) {
     if (!fs.existsSync(constants.DATADIRECTORY)) {
         fs.mkdirSync(constants.DATADIRECTORY);
     }
@@ -99,7 +99,7 @@ export function writePrefix(newPrefix) {
             function (err) {
                 if (err) {
                     Log("Something went wrong with creating new settings file");
-                    Error(err);
+                    Error(err.message);
                 }
             }
         );
@@ -107,9 +107,9 @@ export function writePrefix(newPrefix) {
         fs.readFile(constants.SETTINGSPATH, function (err, buf) {
             if (err) {
                 Log("Something went wrong with reading settings.json");
-                Error(err);
+                Error(err.message);
             }
-            let settings = JSON.parse(buf);
+            let settings = JSON.parse(buf.toString());
             settings.prefix = newPrefix;
             fs.writeFile(
                 constants.SETTINGSPATH,
@@ -117,7 +117,7 @@ export function writePrefix(newPrefix) {
                 function (err) {
                     if (err) {
                         Log("Something went wrong with updating prefix in the settings file");
-                        Error(err);
+                        Error(err.message);
                     }
                 }
             );

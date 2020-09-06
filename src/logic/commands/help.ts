@@ -1,8 +1,10 @@
+import { TextChannel, DMChannel, NewsChannel } from "discord.js";
+
 /**
  * Posts a message with all available commands to the given channel
  * Uses the given prefix in its command outlines
  */
-export function help(channel, prefix) {
+export function help(channel: TextChannel | DMChannel | NewsChannel, prefix: string) {
     let helpMessage = [];
 
     helpMessage.push('List of all possible commands:');
@@ -16,7 +18,5 @@ export function help(channel, prefix) {
     helpMessage.push(`**${prefix}ping**: Responds with 'Pong!'.`);
     helpMessage.push(`**${prefix}help**: You are here!`);
 
-    helpMessage = helpMessage.join('\n');
-
-    channel.send(helpMessage);
+    channel.send(helpMessage.join('\n'));
 }

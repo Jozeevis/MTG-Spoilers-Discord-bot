@@ -1,34 +1,37 @@
+import { Global } from '../../bot.js';
+declare var global: Global;
+
 import { Log } from '../common/logging.js';
 import { saveWatchedSets } from '../data-io.js';
-
-/* global watchedSetcodes:writable, savedIntervals  */
+import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
 
 /**
  * Stops any current spoilerwatch for set with the given setcode in the given channel
  */
-export function stopWatch(channel, set) {
+export function stopWatch(channel: TextChannel | DMChannel | NewsChannel, set: string) {
     Log(`Checking spoilerwatch for set ${set}.`);
     Log(`Checking if set matches with ${set} and channel matches with ${channel.id}`);
     // Check if set is watched in the current channel
     if (
-        watchedSetcodes &&
-        watchedSetcodes.filter(function (watchedset) {
+        global.watchedSetcodes &&
+        global.watchedSetcodes.filter(function (watchedset) {
             watchedset.setCode == set && watchedset.channelID == channel.id;
         })
     ) {
         Log(`Stopping spoilerwatch for set ${set}.`);
         channel.send(`Stopping spoilerwatch for set ${set}.`);
         // Find the timeout for this set and channel
-        savedIntervals.find((o, i) => {
+        global.savedIntervals.find((o, i) => {
             if (o.setcode == set && o.channel == channel.id) {
                 // Stop the interval that checks for spoilers
                 clearInterval(o.interval);
-                savedIntervals.splice(i, 1);
+                global.savedIntervals.splice(i, 1);
                 return true;
             }
+            return false;
         });
         // Remove the set and channel combination from the watchedSetcodes and save it
-        watchedSetcodes = watchedSetcodes.filter(function (watchedset) {
+        global.watchedSetcodes = global.watchedSetcodes.filter(function (watchedset) {
             watchedset.setCode != set || watchedset.channelID != channel.id;
         });
         saveWatchedSets();
