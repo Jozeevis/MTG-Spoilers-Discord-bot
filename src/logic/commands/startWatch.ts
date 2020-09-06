@@ -1,13 +1,13 @@
-import { Global } from '../../bot.js';
+import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+
+import { Global } from '../../bot';
 declare var global: Global;
 
-import { Log } from '../common/logging.js';
-import { saveWatchedSets } from '../common/io.js';
-import { startSpoilerWatch } from '../common/spoilerWatches.js';
-import { getNewCardsCommand } from '../commands.js';
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
-import { SavedInterval } from '../../models/saved-interval.js';
-import { WatchedSetCode } from '../../models/watched-setcode.js';
+import { SavedInterval, WatchedSetCode } from '../../models/';
+import { getNewCardsCommand } from '../commands';
+import { Log } from '../common/logging';
+import { saveWatchedSets } from '../common/io';
+import { startSpoilerWatch } from '../common/spoilerWatches';
 
 /**
  * Starts spoilerwatch for set with the given setcode in the given channel

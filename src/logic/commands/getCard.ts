@@ -1,32 +1,34 @@
-import { generateCardMessage } from '../common/card-helper.js';
 import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
-import { scryfallGetCard } from '../common/scryfall.js';
+
 import { ICard } from '../../models';
+import { generateCardMessage } from '../common/card-helper.js';
+import { scryfallGetCard } from '../common/scryfall.js';
 
 /**
  * Tries to find card with the given name and post it to the given channel
  * Uses Scryfall fuzzy search
  */
-export async function getCardCommand(channel: TextChannel | DMChannel | NewsChannel, name: string) {
-    let message = await scryfallGetCard(name, _getCardMessage);
-    if (message) {
+export function getCardCommand(channel: TextChannel | DMChannel | NewsChannel, name: string) {
+    scryfallGetCard(name, _getCardMessage).then((message) => {
         channel.send(message);
-    }
+    }).catch((err) => {
+        channel.send(err);
+    });
 }
 
-function _getCardMessage(card: ICard, attemptedName: string): string {
+function _getCardMessage(card: ICard, attemptedName: string): Promise<string> {
     if (card.object === 'card') {
         let message = generateCardMessage(card);
-        return message;
+        return Promise.resolve(message);
     }
     else {
         if (card.object == 'error') {
             if (card.type == 'ambiguous') {
-                return `Found multiple cards with name like ${attemptedName}. Please try to make a more specific query by adding more words.`;
+                return Promise.reject(`Found multiple cards with name like ${attemptedName}. Please try to make a more specific query by adding more words.`);
             } else {
-                return `Did not find any card with name like ${attemptedName}.`;
+                return Promise.reject(`Did not find any card with name like ${attemptedName}.`);
             }
         }
     }
-    return 'Something went wrong, please try again';
+    return Promise.reject('Something went wrong, please try again');
 }

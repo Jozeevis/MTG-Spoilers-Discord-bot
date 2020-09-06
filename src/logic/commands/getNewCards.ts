@@ -1,16 +1,18 @@
-import { Log, Error } from '../common/logging.js';
-import { getSavedCards, setSavedCards } from '../common/io.js';
-import { generateCardMessage } from '../common/card-helper.js';
 import { NewsChannel, TextChannel, DMChannel } from 'discord.js';
-import { ICard } from '../../models/card.js';
-import { scryfallGetSet } from '../common/scryfall.js';
+
+import { ICard } from '../../models';
+import constants from '../constants';
+import { Log, Error } from '../common/logging';
+import { getSavedCards, setSavedCards } from '../common/io';
+import { generateCardMessage } from '../common/card-helper';
+import { scryfallGetSet } from '../common/scryfall';
 
 /**
  * Finds all new cards in the given set that haven't been posted to the given channel yet and posts them there
  * @param {boolean} verbose If true, will send messages to the channel if no cards are found
  * @param {boolean} ignoreBasics If true, the standard basic lands will not be sent (plains, island, swamp, mountain, forest)
  */
-export async function getNewCardsCommand(channel: TextChannel | DMChannel | NewsChannel, set: string, verbose = false, ignoreBasics = true) {
+export function getNewCardsCommand(channel: TextChannel | DMChannel | NewsChannel, set: string, verbose = false, ignoreBasics = true) {
     if (verbose) {
         let message = `Trying to get newly spoiled cards from set with code ${set}`;
         if (ignoreBasics != false) {
@@ -33,7 +35,7 @@ export async function getNewCardsCommand(channel: TextChannel | DMChannel | News
                     channel.send(message);
                 }
             },
-            1000,
+            constants.MESSAGEINTERVAL,
             messages
         );
     }).catch((err) => {

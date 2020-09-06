@@ -1,5 +1,5 @@
-import constants from "./constants.js";
 import { Message, BitFieldResolvable, PermissionString } from "discord.js";
+import constants from "../constants";
 
 /**
  * Checks if the user who sent the given message has the required discord permission as defined in constants.

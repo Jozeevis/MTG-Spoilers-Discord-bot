@@ -1,8 +1,9 @@
-import { Global } from '../../bot.js';
+import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+
+import { Global } from '../../bot';
 declare var global: Global;
 
-import { writePrefix } from '../common/io.js';
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { writePrefix } from '../common/io';
 
 /**
  * Changes the prefix for the bot to the given new prefix

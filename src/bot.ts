@@ -1,12 +1,12 @@
 import Discord from 'discord.js';
 
-import auth from './auth.js';
+import auth from './auth';
 
-import constants from './logic/common/constants.js';
-import { readWatchedSets, readPrefix } from './logic/common/io.js';
-import * as commands from './logic/commands.js';
-import { Log, Error } from './logic/common/logging.js';
-import * as permissions from './logic/common/permissions.js';
+import constants from './logic/constants';
+import { readWatchedSets, readPrefix } from './logic/common/io';
+import * as commands from './logic/commands';
+import { Log, Error } from './logic/common/logging';
+import * as permissions from './logic/common/permissions';
 import { IWatchedSetcode, ISavedInterval } from './models';
 
 export interface Global extends NodeJS.Global {

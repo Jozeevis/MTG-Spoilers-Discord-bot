@@ -1,9 +1,10 @@
-import { Global } from '../../bot.js';
+import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+
+import { Global } from '../../bot';
 declare var global: Global;
 
-import { Log } from '../common/logging.js';
-import { saveWatchedSets } from '../common/io.js';
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { Log } from '../common/logging';
+import { saveWatchedSets } from '../common/io';
 
 /**
  * Stops any current spoilerwatch for set with the given setcode in the given channel

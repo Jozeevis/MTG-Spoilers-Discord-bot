@@ -1,4 +1,4 @@
-import { TextChannel, DMChannel, NewsChannel } from "discord.js";
+import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
 
 /**
  * Posts a message with all available commands to the given channel

@@ -1,8 +1,8 @@
 import fs from 'fs';
-
-import { getFilename } from '../common/io.js';
-import { Log, Error } from '../common/logging.js';
 import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+
+import { getFilename } from '../common/io';
+import { Log, Error } from '../common/logging';
 
 /**
  * Clears saved data for any cards already sent for set with given setcode in given channel

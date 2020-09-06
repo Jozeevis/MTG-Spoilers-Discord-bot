@@ -1,12 +1,13 @@
-import { Global } from '../../bot.js';
-declare var global: Global;
-
 import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
 
-import constants from './constants.js';
-import { Log, Error } from './logging.js';
-import { getNewCardsCommand } from '../commands.js';
-import { SavedInterval } from '../../models/saved-interval.js';
+import { Global } from '../../bot';
+declare var global: Global;
+
+
+import constants from '../constants';
+import { Log, Error } from './logging';
+import { getNewCardsCommand } from '../commands';
+import { SavedInterval } from '../../models';
 
 /**
  * Start the interval to look for new cards for the given set and channelID

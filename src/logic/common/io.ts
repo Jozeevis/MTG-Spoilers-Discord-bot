@@ -1,11 +1,11 @@
 import { Snowflake } from "discord.js";
-import { Global } from '../../bot.js';
+import { Global } from '../../bot';
 declare var global: Global;
 import fs from 'fs';
 
-import constants from './constants.js';
-import { Log, Error } from './logging.js';
-import { startSpoilerWatches } from './spoilerWatches.js';
+import constants from '../constants';
+import { Log, Error } from './logging';
+import { startSpoilerWatches } from './spoilerWatches';
 
 /**
  * Returns the data filename for the given set and channelID

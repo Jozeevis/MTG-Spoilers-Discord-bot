@@ -1,6 +1,6 @@
 {
     "name": "mtg-spoilers-discord-bot",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "A bot to automatically post spoilers for Magic the Gathering in Discord",
     "main": "bot.js",
     "author": "Jozeevis",
