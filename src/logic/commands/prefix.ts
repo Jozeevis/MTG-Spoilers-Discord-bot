@@ -1,7 +1,7 @@
 import { Global } from '../../bot.js';
 declare var global: Global;
 
-import { writePrefix } from '../data-io.js';
+import { writePrefix } from '../common/io.js';
 import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
 
 /**

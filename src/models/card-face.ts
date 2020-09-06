@@ -2,6 +2,7 @@ import { ICardImages } from "./card-images";
 
 export interface ICardFace {
     object: string;
+
     name: string;
     mana_cost: string;
     type_line: string;

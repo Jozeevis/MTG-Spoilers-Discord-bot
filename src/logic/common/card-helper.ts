@@ -1,16 +1,11 @@
 import _ from 'lodash';
 
-import { Log } from './common/logging.js';
-import { ICard } from '../models/card.js';
-import { ICardImages } from '../models/card-images.js';
-import { ICardFace } from '../models/card-face.js';
+import { ICard, ICardFace, ICardImages } from '../../models';
 
 /**
  * Creates a formatted message describing the given card and returns it
  */
 export function generateCardMessage(card: ICard) {
-    let cardName = card.name;
-    Log(`Sending ${cardName} to channel.`);
     return generateDescriptionText(card);
 }
 

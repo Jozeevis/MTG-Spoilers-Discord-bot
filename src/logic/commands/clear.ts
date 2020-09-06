@@ -7,7 +7,7 @@ import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
 /**
  * Clears saved data for any cards already sent for set with given setcode in given channel
  */
-export function clear(channel: TextChannel | DMChannel | NewsChannel, set: string) {
+export function clearCommand(channel: TextChannel | DMChannel | NewsChannel, set: string) {
     let fileName = getFilename(set, channel.id);
     try {
         fs.writeFile(fileName, '[]', (err) => {

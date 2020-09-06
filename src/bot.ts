@@ -2,13 +2,12 @@ import Discord from 'discord.js';
 
 import auth from './auth.js';
 
-import constants from './logic/constants.js';
-import { readWatchedSets, readPrefix } from './logic/data-io.js';
+import constants from './logic/common/constants.js';
+import { readWatchedSets, readPrefix } from './logic/common/io.js';
 import * as commands from './logic/commands.js';
 import { Log, Error } from './logic/common/logging.js';
 import * as permissions from './logic/common/permissions.js';
-import { IWatchedSetcode } from './models/watched-setcode.js';
-import { ISavedInterval } from './models/saved-interval.js';
+import { IWatchedSetcode, ISavedInterval } from './models';
 
 export interface Global extends NodeJS.Global {
     bot: Discord.Client,
@@ -69,7 +68,7 @@ global.bot.on("message", async (message) => {
                     if (queryIndex > 0) {
                         var query = message.content.substring(queryIndex);
                         if (query) {
-                            commands.getCard(message.channel, query);
+                            commands.getCardCommand(message.channel, query);
                         }
                         else {
                             message.channel.send(`You have to supply a query, like so:\n${global.prefix}get Sonic Assault`);
@@ -84,7 +83,7 @@ global.bot.on("message", async (message) => {
                 case "getallcards":
                     if (permissions.checkPermissions(message)) {
                         let bool = arg3 === "true";
-                        commands.getAllCards(message.channel, arg2, bool);
+                        commands.getAllCardsCommand(message.channel, arg2, bool);
                     }
                     break;
                 // Get all new cards from the given set and send them in the current channel
@@ -92,27 +91,27 @@ global.bot.on("message", async (message) => {
                 case "getnewcards":
                     if (permissions.checkPermissions(message)) {
                         let bool = arg3 === "true";
-                        commands.getNewCards(message.channel, arg2, true, bool);
+                        commands.getNewCardsCommand(message.channel, arg2, true, bool);
                     }
                     break;
                 // Start spoilerwatch for the given set ID in the current channel
                 case "watch":
                 case "startwatch":
                     if (permissions.checkPermissions(message)) {
-                        commands.startWatch(message.channel, arg2);
+                        commands.startWatchCommand(message.channel, arg2);
                     }
                     break;
                 // Stop spoilerwatch for the given set ID in the current channel
                 case "unwatch":
                 case "stopwatch":
                     if (permissions.checkPermissions(message)) {
-                        commands.stopWatch(message.channel, arg2);
+                        commands.stopWatchCommand(message.channel, arg2);
                     }
                     break;
                 // Clears the saved data for the given set in the current channel
                 case "clear":
                     if (permissions.checkPermissions(message)) {
-                        commands.clear(message.channel, arg2);
+                        commands.clearCommand(message.channel, arg2);
                     }
                     break;
                 // Changes the prefix the bot uses for its commands
@@ -123,7 +122,7 @@ global.bot.on("message", async (message) => {
                     break;
                 // Sends a list of all possible commands
                 case "help":
-                    commands.help(message.channel, global.prefix);
+                    commands.helpCommand(message.channel, global.prefix);
                     break;
                 default:
                     message.channel.send(`No command ${cmd} found, please check your spelling or use ${global.prefix}help for a list of possible commands.`);

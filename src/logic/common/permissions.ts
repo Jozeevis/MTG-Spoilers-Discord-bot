@@ -1,4 +1,4 @@
-import constants from "../constants.js";
+import constants from "./constants.js";
 import { Message, BitFieldResolvable, PermissionString } from "discord.js";
 
 /**

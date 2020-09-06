@@ -1,50 +1,32 @@
-import https from 'https';
-
-import { Log } from '../common/logging.js';
-import { generateCardMessage } from '../card-helper.js';
+import { generateCardMessage } from '../common/card-helper.js';
 import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { scryfallGetCard } from '../common/scryfall.js';
+import { ICard } from '../../models';
 
 /**
  * Tries to find card with the given name and post it to the given channel
  * Uses Scryfall fuzzy search
  */
-export function getCard(channel: TextChannel | DMChannel | NewsChannel, name: string) {
-    // Make a request to the Scryfall api
-    https.get(`https://api.scryfall.com/cards/named?fuzzy=${name}`, (resp) => {
-        let data = '';
+export async function getCardCommand(channel: TextChannel | DMChannel | NewsChannel, name: string) {
+    let message = await scryfallGetCard(name, _getCardMessage);
+    if (message) {
+        channel.send(message);
+    }
+}
 
-        // A chunk of data has been received.
-        resp.on('data', (chunk) => {
-            data += chunk;
-        });
-
-        // The whole response has been received.
-        resp.on('end', () => {
-            let card = null;
-            try {
-                // Parse the data in the response
-                card = JSON.parse(data);
-            } catch (error) {
-                Log('Something went wrong with parsing data from Scryfall.');
-                Error(error);
-                return;
-            }
-            if (card && card.object == 'card') {
-                let message = generateCardMessage(card);
-                channel.send(message);
+function _getCardMessage(card: ICard, attemptedName: string): string {
+    if (card.object === 'card') {
+        let message = generateCardMessage(card);
+        return message;
+    }
+    else {
+        if (card.object == 'error') {
+            if (card.type == 'ambiguous') {
+                return `Found multiple cards with name like ${attemptedName}. Please try to make a more specific query by adding more words.`;
             } else {
-                if (card.object == 'error') {
-                    if (card.type == 'ambiguous') {
-                        channel.send(`Found multiple cards with name like ${name}. Please try to make a more specific query by adding more words.`);
-                    } else {
-                        channel.send(`Did not find any card with name like ${name}.`);
-                    }
-                }
+                return `Did not find any card with name like ${attemptedName}.`;
             }
-        });
-    })
-        .on('error', (err) => {
-            Error(err.message);
-            channel.send(`Error trying to get card with name like ${name}.\nCheck the console for more details.`);
-        });
+        }
+    }
+    return 'Something went wrong, please try again';
 }
