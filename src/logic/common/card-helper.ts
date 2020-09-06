@@ -14,11 +14,6 @@ export function generateCardMessage(card: ICard) {
  * @author Original by NoxxFlame, adapted by Jozeevis
  */
 function generateDescriptionText(card: ICard) {
-    const ptToString = (card: ICard | ICardFace) =>
-        `**${card.power?.replace(/\*/g, '\\*')}/${card.toughness?.replace(
-            /\*/g,
-            '\\*'
-        )}**`;
 
     const description = [];
     if (!card.card_faces) {
@@ -60,7 +55,7 @@ function generateDescriptionText(card: ICard) {
 
         if (card.power) {
             // bold P/T
-            description.push(ptToString(card));
+            description.push(powerToughnessToString(card));
         }
 
         if (card.image_uris) {
@@ -96,7 +91,7 @@ function generateDescriptionText(card: ICard) {
                 );
             }
             if (face.power) {
-                description.push(ptToString(face));
+                description.push(powerToughnessToString(face));
             }
             if (face.image_uris) {
                 description.push(getImageUrl(face.image_uris));
@@ -123,4 +118,15 @@ function getImageUrl(imageUris: ICardImages) {
         return imageUris.png;
     }
     return '';
+}
+
+function powerToughnessToString(object: ICard | ICardFace): string {
+    if (!object.power || !object.toughness) {
+        return '';
+    }
+
+    let powerString = object.power.replace(/\*/g, '\\*');
+    let toughnessString = object.toughness?.replace(/\*/g, '\\*');
+
+    return `**${powerString}/${toughnessString}**`;
 }
