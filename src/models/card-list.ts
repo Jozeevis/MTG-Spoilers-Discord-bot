@@ -6,7 +6,7 @@ export interface ICardList {
     data: ICard[]
     has_more: boolean;
 
-    next_page: string | undefined;
-    total_cards: number | undefined;
-    warnings: string[] | undefined;
+    next_page?: string;
+    total_cards?: number;
+    warnings?: string[];
 }

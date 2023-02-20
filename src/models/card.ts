@@ -9,16 +9,16 @@ export interface ICard {
     type_line: string;
     rarity: string;
 
-    mana_cost: string | undefined;
-    printed_type_line: string | undefined;
-    power: string | undefined;
-    toughness: string | undefined;
-    loyalty: string | undefined;
-    flavor_text: string | undefined;
-    oracle_text: string | undefined;
-    printed_text: string | undefined;
-    type: string | undefined;
+    mana_cost?: string;
+    printed_type_line?: string;
+    power?: string;
+    toughness?: string;
+    loyalty?: string;
+    flavor_text?: string;
+    oracle_text?: string;
+    printed_text?: string;
+    type?: string;
 
-    image_uris: ICardImages | undefined;
-    card_faces: ICardFace[] | undefined;
+    image_uris?: ICardImages;
+    card_faces?: ICardFace[];
 }

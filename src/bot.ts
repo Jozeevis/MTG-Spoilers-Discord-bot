@@ -19,12 +19,12 @@ declare var global: Global;
 
 // Initialize Discord Bot
 Log("Initializing bot...");
-global.bot = new Discord.Client(); /* global bot */
+global.bot = new Discord.Client();
 
 try {
     global.bot.login(auth.token);
-} catch (err) {
-    Error(err);
+} catch (error) {
+    Error(error);
 }
 
 //When bot is ready
@@ -36,11 +36,11 @@ global.bot.on("ready", function () {
     global.savedIntervals = [];
     global.prefix = readPrefix(
         constants.BOTDEFAULTPREFIX
-    ); /* global prefix */
+    );
     readWatchedSets();
 });
 
-//When bot reads message
+// When the bot sees a message in any channel it can read
 global.bot.on("message", async (message) => {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with the specified prefix
@@ -141,8 +141,8 @@ global.bot.on("disconnect", function (errMsg, code) {
     if (code === 1000) {
         try {
             global.bot.login(auth.token);
-        } catch (err) {
-            Error(err);
+        } catch (error) {
+            Error(error);
         }
     }
 });

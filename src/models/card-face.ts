@@ -7,16 +7,16 @@ export interface ICardFace {
     mana_cost: string;
     type_line: string;
 
-    artist: string | undefined;
-    flavor_Text: string | undefined;
-    illustration_id: string | undefined;
-    image_uris: ICardImages | undefined;
-    loyalty: string | undefined;
-    oracle_text: string | undefined;
-    power: string | undefined;
-    printed_name: string | undefined;
-    printed_text: string | undefined;
-    printed_type_line: string | undefined;
-    toughness: string | undefined;
-    watermark: string | undefined;
+    artist?: string;
+    flavor_Text?: string;
+    illustration_id?: string;
+    image_uris?: ICardImages;
+    loyalty?: string;
+    oracle_text?: string;
+    power?: string;
+    printed_name?: string;
+    printed_text?: string;
+    printed_type_line?: string;
+    toughness?: string;
+    watermark?: string;
 }

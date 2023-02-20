@@ -8,8 +8,8 @@ export function Log(message: string) {
 /**
  * Logs the given message to the console as an error with a human readable date prefixed
  */
-export function Error(message: string) {
-    console.error(`${getReadableDate()} - ERROR: ${message}`);
+export function Error(message: any) {
+    console.error(`${getReadableDate()} - ERROR: ${message as string}`);
 }
 
 /**

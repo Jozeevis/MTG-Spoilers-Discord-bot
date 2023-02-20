@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { ICard, ICardFace, ICardImages } from '../../models';
 
 /**
@@ -29,7 +27,7 @@ function generateDescriptionText(card: ICard) {
         if (card.printed_type_line || card.type_line) {
             // bold type line
             let type = `${card.printed_type_line || card.type_line}`;
-            type += ` (${_.capitalize(card.rarity)})`;
+            type += ` (${capitalize(card.rarity)})`;
             description.push(type);
         }
 
@@ -79,7 +77,7 @@ function generateDescriptionText(card: ICard) {
 
             if (face.type_line) {
                 let type = `${face.printed_type_line || face.type_line}`;
-                type += ` (${_.capitalize(card.rarity)})`;
+                type += ` (${capitalize(card.rarity)})`;
                 description.push(type);
             }
 
@@ -129,4 +127,12 @@ function powerToughnessToString(object: ICard | ICardFace): string {
     let toughnessString = escape(object.toughness).replace(/\*/g, '\\*');
 
     return `**${powerString}/${toughnessString}**`;
+}
+
+function capitalize(content: string): string {
+    if (!content) {
+        return '';
+    }
+
+    return content[0].toUpperCase() + content.substring(1).toLowerCase();
 }
