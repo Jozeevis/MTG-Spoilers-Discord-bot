@@ -1,4 +1,4 @@
-import { NewsChannel, TextChannel, DMChannel } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
 import { ICard } from '../../models';
 import constants from '../constants';
@@ -12,7 +12,7 @@ import { scryfallGetSet } from '../common/scryfall';
  * @param {boolean} verbose If true, will send messages to the channel if no cards are found
  * @param {boolean} ignoreBasics If true, the standard basic lands will not be sent (plains, island, swamp, mountain, forest)
  */
-export function getNewCardsCommand(channel: TextChannel | DMChannel | NewsChannel, set: string, verbose = false, ignoreBasics = true) {
+export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedChannel, set: string, verbose = false, ignoreBasics = true) {
     if (verbose) {
         let message = `Trying to get newly spoiled cards from set with code ${set}`;
         if (ignoreBasics != false) {

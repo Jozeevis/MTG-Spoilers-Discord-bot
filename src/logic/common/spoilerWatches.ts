@@ -1,4 +1,4 @@
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
 import { Global } from '../../bot';
 declare var global: Global;
@@ -12,7 +12,7 @@ import { SavedInterval } from '../../models';
 /**
  * Start the interval to look for new cards for the given set and channelID
  */
-export function startSpoilerWatch(channel: TextChannel | DMChannel | NewsChannel, set: string): NodeJS.Timeout {
+export function startSpoilerWatch(channel: GuildTextBasedChannel | TextBasedChannel, set: string): NodeJS.Timeout {
     return setInterval(
         function (set) {
             Log(`Start looking for new cards in set ${set} for channel ${channel.id}`);
@@ -26,14 +26,14 @@ export function startSpoilerWatch(channel: TextChannel | DMChannel | NewsChannel
 /**
  * Starts spoiler watches for all saved watched setcodes
  */
-export function startSpoilerWatches() {
+export async function startSpoilerWatches() {
     Log(`Watched sets: ${JSON.stringify(global.watchedSetcodes)}`);
     for (let i = 0; i < global.watchedSetcodes.length; i++) {
         let watchedSet = global.watchedSetcodes[i];
         Log(`Watched set: ${JSON.stringify(watchedSet)}`);
         Log(`Start looking for new cards in set ${watchedSet.setCode} for channel ${watchedSet.channelID}`)
-        let channel = global.bot.channels.cache.get(watchedSet.channelID) as TextChannel;
-        if (channel) {
+        let channel = await global.bot.channels.fetch(watchedSet.channelID);
+        if (channel && channel.isTextBased()) {
             let interval = startSpoilerWatch(
                 channel,
                 watchedSet.setCode

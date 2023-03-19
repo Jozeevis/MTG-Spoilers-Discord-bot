@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
 import { getFilename } from '../common/io';
 import { Log, Error } from '../common/logging';
@@ -7,7 +7,7 @@ import { Log, Error } from '../common/logging';
 /**
  * Clears saved data for any cards already sent for set with given setcode in given channel
  */
-export function clearCommand(channel: TextChannel | DMChannel | NewsChannel, set: string) {
+export function clearCommand(channel: GuildTextBasedChannel | TextBasedChannel, set: string) {
     let fileName = getFilename(set, channel.id);
     try {
         fs.writeFile(fileName, '[]', (err) => {

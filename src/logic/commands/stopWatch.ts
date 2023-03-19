@@ -1,4 +1,4 @@
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
 import { Global } from '../../bot';
 declare var global: Global;
@@ -9,7 +9,7 @@ import { saveWatchedSets } from '../common/io';
 /**
  * Stops any current spoilerwatch for set with the given setcode in the given channel
  */
-export function stopWatchCommand(channel: TextChannel | DMChannel | NewsChannel, set: string) {
+export function stopWatchCommand(channel: GuildTextBasedChannel | TextBasedChannel, set: string) {
     Log(`Checking spoilerwatch for set ${set}.`);
     Log(`Checking if set matches with ${set} and channel matches with ${channel.id}`);
     // Check if set is watched in the current channel
