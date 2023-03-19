@@ -1,4 +1,4 @@
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
 import { ICard } from '../../models';
 import { generateCardMessage } from '../common/card-helper.js';
@@ -8,7 +8,7 @@ import { scryfallGetCard } from '../common/scryfall.js';
  * Tries to find card with the given name and post it to the given channel
  * Uses Scryfall fuzzy search
  */
-export function getCardCommand(channel: TextChannel | DMChannel | NewsChannel, name: string) {
+export function getCardCommand(channel: GuildTextBasedChannel | TextBasedChannel, name: string) {
     scryfallGetCard(name, _getCardMessage).then((message) => {
         channel.send(message);
     }).catch((err) => {

@@ -1,4 +1,4 @@
-import { TextChannel, DMChannel, NewsChannel } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
 import { Global } from '../../bot';
 declare var global: Global;
@@ -12,7 +12,7 @@ import { startSpoilerWatch } from '../common/spoilerWatches';
 /**
  * Starts spoilerwatch for set with the given setcode in the given channel
  */
-export function startWatchCommand(channel: TextChannel | DMChannel | NewsChannel, set: string) {
+export function startWatchCommand(channel: GuildTextBasedChannel | TextBasedChannel, set: string) {
     //Add the combination to the watched sets and save this
     global.watchedSetcodes.push(new WatchedSetCode(set, channel.id));
     saveWatchedSets();

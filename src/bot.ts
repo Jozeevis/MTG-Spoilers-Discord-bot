@@ -19,7 +19,11 @@ declare var global: Global;
 
 // Initialize Discord Bot
 Log("Initializing bot...");
-global.bot = new Discord.Client();
+global.bot = new Discord.Client({ intents: [
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.MessageContent,
+] });
 
 try {
     global.bot.login(auth.token);
@@ -41,7 +45,7 @@ global.bot.on("ready", function () {
 });
 
 // When the bot sees a message in any channel it can read
-global.bot.on("message", async (message) => {
+global.bot.on("messageCreate", async (message) => {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with the specified prefix
     if (message.content.substring(0, global.prefix.length) == global.prefix) {

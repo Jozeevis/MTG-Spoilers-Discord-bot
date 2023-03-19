@@ -1,4 +1,4 @@
-import { Message, BitFieldResolvable, PermissionString } from "discord.js";
+import { Message } from "discord.js";
 import constants from "../constants";
 
 /**
@@ -7,7 +7,7 @@ import constants from "../constants";
  * @returns true if the user has the right permission, false otherwise
  */
 export function checkPermissions(message: Message) {
-    if (!message.member?.hasPermission(constants.BOTNECESSARYPERMISSION as BitFieldResolvable<PermissionString>)) {
+    if (!message.member?.permissions.has(constants.BOTNECESSARYPERMISSION)) {
         message.channel.send("You do not have permissions to use that command.");
         return false;
     }
