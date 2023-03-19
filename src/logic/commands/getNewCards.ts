@@ -39,16 +39,18 @@ export function getNewCardsCommand(channel: TextChannel | DMChannel | NewsChanne
             messages
         );
     }).catch((err) => {
-        channel.send(err);
+        if (verbose) {
+            channel.send(err);
+        }
     });
 }
 
 async function _getNewSetMessages(cards: ICard[], args?: { [key: string]: any }): Promise<string[]> {
     const getNewSetArgs = args as GetNewSetArgs;
     if (!getNewSetArgs) {
-        console.log(getNewSetArgs);
-        Error('YOU HECKED UP');
-        return ['YOU HECKED UP'];
+        const errorMessage = 'Something went wrong in the bot parsing your command.'
+        Error(errorMessage);
+        return Promise.reject([errorMessage]);
     }
 
     // Read which cards are already saved
