@@ -32,7 +32,7 @@ try {
 }
 
 //When bot is ready
-global.bot.on("ready", function () {
+global.bot.on(Discord.Events.ClientReady, function () {
     Log("Connected!");
     Log(`Logged in as: ${global.bot.user?.username} - (${global.bot.user?.id})`);
 
@@ -45,7 +45,7 @@ global.bot.on("ready", function () {
 });
 
 // When the bot sees a message in any channel it can read
-global.bot.on("messageCreate", async (message) => {
+global.bot.on(Discord.Events.MessageCreate, async (message) => {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with the specified prefix
     if (message.content.substring(0, global.prefix.length) == global.prefix) {
