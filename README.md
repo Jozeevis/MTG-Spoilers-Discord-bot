@@ -1,6 +1,9 @@
 # MTG-Spoilers-Discord-bot
 A Discord bot for automatically posting Magic: The Gathering card spoilers. Works with the Scryfall API.
 
+## Installation
+For help with setting up the bot, please check the [Wiki](https://github.com/Jozeevis/MTG-Spoilers-Discord-bot/wiki).
+
 ## Commands
 Command prefix is '!' by default.
 ### get [QUERY]
