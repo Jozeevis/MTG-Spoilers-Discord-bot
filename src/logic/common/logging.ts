@@ -1,15 +1,53 @@
+import fs from 'fs';
+
+import constants from '../constants';
+
 /**
  * Logs the given message to the console with a human readable date prefixed
  */
 export function Log(message: string) {
-    console.log(`${getReadableDate()} - ${message}`);
+    let log = `${getReadableDate()} - ${message}`
+    console.log(log);
+    writeToLogFile(log);
 }
 
 /**
  * Logs the given message to the console as an error with a human readable date prefixed
  */
 export function Error(message: any) {
-    console.error(`${getReadableDate()} - ERROR: ${message as string}`);
+    let log = `${getReadableDate()} - ERROR: ${message as string}`
+    console.error(log);
+    writeToLogFile(log);
+}
+
+/**
+ * Write the log to the log file on disk
+ */
+function writeToLogFile(log: string) {
+    if (!fs.existsSync(constants.DATADIRECTORY)) {
+        fs.mkdirSync(constants.DATADIRECTORY);
+    }
+    if (!fs.existsSync(constants.LOGPATH)) {
+        fs.writeFile(
+            constants.LOGPATH,
+            log + '\n',
+            function (err) {
+                if (err) {
+                    console.error("Something went wrong with creating new log file: " + err.message);
+                }
+            }
+        );
+    } else {
+        fs.appendFile(
+            constants.LOGPATH,
+            log + '\n',
+            function (err) {
+                if (err) {
+                    console.error("Something went wrong with appending to log file: " + err.message);
+                }
+            }
+        );
+    }
 }
 
 /**
