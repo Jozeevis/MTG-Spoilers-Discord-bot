@@ -1,0 +1,5 @@
+services:
+        mtgbot:
+               build: .
+               restart: always
+
