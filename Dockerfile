@@ -1,9 +1,9 @@
-FROM node:21-alpine
+FROM node:lts
 
 WORKDIR app/
 
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+COPY package.json .
+COPY package-lock.json .
 
 RUN npm install
 
