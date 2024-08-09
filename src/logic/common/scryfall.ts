@@ -124,6 +124,7 @@ function makeScryfallAPICall(endpoint: string): Promise<string> {
         // Make a request to the Scryfall api
         https.get(
             endpoint,
+            {headers : {['User-Agent']: 'DiscordSpoilerbot1.0', Accept: 'application/json'}},
             (resp) => {
                 let data = '';
 
