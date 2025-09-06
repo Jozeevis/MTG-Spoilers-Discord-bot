@@ -28,12 +28,12 @@ function _parseCard(data: string, name: string): Promise<ICard> {
                 resolve(card);
             }
             else {
-                Log('Expected \'card\' object from Scryfall but could not parse, got the following:');
-                Log(cardData);
+                Error('Expected \'card\' object from Scryfall but could not parse, got the following:');
+                Error(cardData);
                 reject(GET_CARD_ERROR);
             }
         } catch (error) {
-            Log('Something went wrong while trying to parse data from Scryfall.');
+            Error('Something went wrong while trying to parse data from Scryfall.');
             Error(error);
             reject(GET_CARD_ERROR);
         }
@@ -41,7 +41,8 @@ function _parseCard(data: string, name: string): Promise<ICard> {
 }
 
 export async function scryfallGetSet(set: string, ignoreBasics: boolean, callback: (cards: ICard[], args?: { [key: string]: any }) => Promise<string[]>, args?: { [key: string]: any }): Promise<string[]> {
-    const endpoint = `https://api.scryfall.com/cards/search?order=spoiled&q=e%3A${set}&unique=prints`;
+    const query = `e:${set}`;
+    const endpoint = `https://api.scryfall.com/cards/search?order=spoiled&q=${encodeURIComponent(query)}&unique=prints`;
     let data = await makeScryfallAPICall(endpoint).catch((err) => {
         return Promise.reject(err);
     });
@@ -101,18 +102,18 @@ async function _parseSet(data: string, set: string, ignoreBasics: boolean): Prom
                     }
                 }
                 else {
-                    Log(`Expected \'list\' object from Scryfall but got type \'${cardlist.object}\', with the following data`);
-                    Log(cardlistData);
+                    Error(`Expected \'list\' object from Scryfall but got type \'${cardlist.object}\', with the following data`);
+                    Error(cardlistData);
                     reject(GET_SET_ERROR);
                 }
             }
             else {
-                Log('Expected \'list\' object from Scryfall but could not parse, got the following:');
-                Log(cardlistData);
+                Error('Expected \'list\' object from Scryfall but could not parse, got the following:');
+                Error(cardlistData);
                 reject(GET_SET_ERROR);
             }
         } catch (error) {
-            Log('Something went wrong with parsing data from Scryfall.');
+            Error('Something went wrong with parsing data from Scryfall.');
             Error(error);
             reject(GET_SET_ERROR);
         }
@@ -143,7 +144,7 @@ function makeScryfallAPICall(endpoint: string): Promise<string> {
             }
         )
             .on('error', (err) => {
-                Log('Something went wrong while trying to get data from Scryfall.');
+                Error('Something went wrong while trying to get data from Scryfall.');
                 Error(err.message);
                 return reject(GET_SET_ERROR);
             });
