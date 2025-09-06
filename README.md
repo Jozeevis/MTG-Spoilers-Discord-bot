@@ -7,22 +7,45 @@ For help with setting up the bot, please check the [Wiki](https://github.com/Joz
 
 ## Commands
 Command prefix is '!' by default.
+
 ### get [QUERY]
 Will send a message with name matching the given query (using Scryfall's [fuzzy search](https://scryfall.com/docs/api/cards/named)).
+
+Example: `!get Lightning Bolt`
+
 ### getall/getallcards [SETCODE]
 Will send a message for every card from the set with the given setcode.
+
+Example: `!getall ss1`
+
 ### getnew/getnewcards [SETCODE]
 Will send a message for every card from the set with the given setcode that hasn't been send in that channel yet.
+
+Example: `!getnew ss1`
+
 ### watch/startwatch [SETCODE]
 Will start a watch for the set with the given setcode. This means the bot will watch for any unsent cards for that set and automatically send any new cards to the channel every half hour.
+
+Example: `!watch ss1`
+
 ### unwatch/stopwatch [SETCODE]
 Will stop the watch for the set with the given setcode if any is currently started. This will stop the bot from watching for unsent cards and stop it from sending any messages automatically.
+
+Example: `!unwatch ss1`
+
 ### clear [SETCODE]
 Will clear the list of any already sent cards from the set with the given setcode. This means the bot will stop excluding these cards from being send to the channel with the 'getnew' and 'watch' commands, and send every card from that set again when using these commands.
+
+Example: `!clear ss1`
+
 ### prefix [NEWPREFIX]
 Will change the prefix the bot listens to to the given new prefix.
+
+Example: `!prefix $`
+
 ### ping
 Will send a message 'Pong!'.
+
 ### help
 Will send a message with all possible commands and usages.
 
