@@ -5,8 +5,12 @@ import constants from '../constants';
 /**
  * Logs the given message to the console with a human readable date prefixed
  */
-export function Log(message: string) {
-    let log = `${getReadableDate()} - ${message}`
+export function Log(message: any) {
+    let stringMessage = message as string;
+    if (typeof message === 'object') {
+        stringMessage = JSON.stringify(message);
+    }
+    let log = `${getReadableDate()} - ${stringMessage}`
     console.log(log);
     writeToLogFile(log);
 }
@@ -15,7 +19,11 @@ export function Log(message: string) {
  * Logs the given message to the console as an error with a human readable date prefixed
  */
 export function Error(message: any) {
-    let log = `${getReadableDate()} - ERROR: ${message as string}`
+    let stringMessage = message;
+    if (typeof message === 'object') {
+        stringMessage = JSON.stringify(message);
+    }
+    let log = `${getReadableDate()} - ERROR: ${stringMessage}`
     console.error(log);
     writeToLogFile(log);
 }

@@ -1,6 +1,6 @@
 {
     "name": "mtg-spoilers-discord-bot",
-    "version": "2.2.4",
+    "version": "2.2.5",
     "description": "A Discord bot that can be used to automatically post newly spoiled cards for Magic the Gathering as provided by the Scryfall API",
     "main": "bot.js",
     "author": "Jozeevis",
