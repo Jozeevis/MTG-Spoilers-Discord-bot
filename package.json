@@ -14,7 +14,7 @@
         "start": "npm run build && node build/bot.js"
     },
     "dependencies": {
-        "discord.js": "^14.8.0"
+        "discord.js": "^14.26.2"
     },
     "devDependencies": {
         "rimraf": "^4.4.0",
