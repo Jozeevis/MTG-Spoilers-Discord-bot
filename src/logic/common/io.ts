@@ -1,6 +1,4 @@
 import { Snowflake } from "discord.js";
-import { Global } from '../../bot';
-declare var global: Global;
 import fs from 'fs';
 
 import constants from '../constants';

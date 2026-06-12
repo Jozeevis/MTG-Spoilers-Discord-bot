@@ -3,6 +3,7 @@ import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 import { ICard } from '../../models';
 import { generateCardMessage } from '../common/card-helper.js';
 import { scryfallGetCard } from '../common/scryfall.js';
+import { TrySend } from '../common/discord';
 
 /**
  * Tries to find card with the given name and post it to the given channel
@@ -10,9 +11,9 @@ import { scryfallGetCard } from '../common/scryfall.js';
  */
 export function getCardCommand(channel: GuildTextBasedChannel | TextBasedChannel, name: string) {
     scryfallGetCard(name, _getCardMessage).then((message) => {
-        channel.send(message);
+        TrySend(channel, message);
     }).catch((err) => {
-        channel.send(err);
+        TrySend(channel, err);
     });
 }
 

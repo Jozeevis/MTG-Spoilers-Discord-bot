@@ -1,9 +1,5 @@
 import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
-import { Global } from '../../bot';
-declare var global: Global;
-
-
 import constants from '../constants';
 import { Log, Error } from './logging';
 import { getNewCardsCommand } from '../commands';

@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import constants from "../constants";
+import { TrySend } from "./discord";
 
 /**
  * Checks if the user who sent the given message has the required discord permission as defined in constants.
@@ -8,7 +9,7 @@ import constants from "../constants";
  */
 export function checkPermissions(message: Message) {
     if (!message.member?.permissions.has(constants.BOTNECESSARYPERMISSION)) {
-        message.channel.send("You do not have permissions to use that command.");
+        TrySend(message.channel, "You do not have permissions to use that command.");
         return false;
     }
     return true;

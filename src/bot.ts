@@ -7,15 +7,6 @@ import { readWatchedSets, readPrefix } from './logic/common/io';
 import * as commands from './logic/commands';
 import { Log, Error } from './logic/common/logging';
 import * as permissions from './logic/common/permissions';
-import { IWatchedSetcode, ISavedInterval } from './models';
-
-export interface Global extends NodeJS.Global {
-    bot: Discord.Client,
-    savedIntervals: ISavedInterval[],
-    watchedSetcodes: IWatchedSetcode[],
-    prefix: string,
-}
-declare var global: Global;
 
 // Initialize Discord Bot
 Log("Initializing bot...");

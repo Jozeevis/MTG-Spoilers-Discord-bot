@@ -1,13 +1,11 @@
 import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
-import { Global } from '../../bot';
-declare var global: Global;
-
 import { SavedInterval, WatchedSetCode } from '../../models/';
 import { getNewCardsCommand } from '../commands';
 import { Log } from '../common/logging';
 import { saveWatchedSets } from '../common/io';
 import { startSpoilerWatch } from '../common/spoilerWatches';
+import { TrySend } from '../common/discord';
 
 /**
  * Starts spoilerwatch for set with the given setcode in the given channel
@@ -17,7 +15,7 @@ export function startWatchCommand(channel: GuildTextBasedChannel | TextBasedChan
     global.watchedSetcodes.push(new WatchedSetCode(set, channel.id));
     saveWatchedSets();
     Log(`Starting spoilerwatch for set ${set}.`);
-    channel.send(`Starting spoilerwatch for set ${set}.`);
+    TrySend(channel, `Starting spoilerwatch for set ${set}.`);
 
     //Immediately look for new cards
     Log(`Start looking for new cards on ${Date.now()}`);

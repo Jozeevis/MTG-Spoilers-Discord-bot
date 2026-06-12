@@ -6,6 +6,7 @@ import { Log, Error } from '../common/logging';
 import { getSavedCards, setSavedCards } from '../common/io';
 import { generateCardMessage } from '../common/card-helper';
 import { scryfallGetSet } from '../common/scryfall';
+import { TrySend } from '../common/discord';
 
 /**
  * Finds all new cards in the given set that haven't been posted to the given channel yet and posts them there
@@ -18,7 +19,7 @@ export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
         if (ignoreBasics != false) {
             message += " (excluding basic lands)";
         }
-        channel.send(`${message}...`);
+        TrySend(channel, `${message}...`);
     }
 
     let args = new GetNewSetArgs(set, channel.id, verbose);
@@ -32,7 +33,9 @@ export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
                 }
                 else {
                     let message = messages.pop();
-                    channel.send(message);
+                    if (message) {
+                        TrySend(channel, message);
+                    }
                 }
             },
             constants.MESSAGEINTERVAL,
@@ -40,7 +43,7 @@ export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
         );
     }).catch((err) => {
         if (verbose) {
-            channel.send(err);
+            TrySend(channel, err);
         }
     });
 }
