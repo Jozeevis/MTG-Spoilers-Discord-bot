@@ -1,4 +1,5 @@
 import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
+import { TrySend } from '../common/discord';
 
 /**
  * Posts a message with all available commands to the given channel
@@ -18,5 +19,5 @@ export function helpCommand(channel: GuildTextBasedChannel | TextBasedChannel, p
     helpMessage.push(`**${prefix}ping**: Responds with 'Pong!'.`);
     helpMessage.push(`**${prefix}help**: You are here!`);
 
-    channel.send(helpMessage.join('\n'));
+    TrySend(channel, helpMessage.join('\n'));
 }

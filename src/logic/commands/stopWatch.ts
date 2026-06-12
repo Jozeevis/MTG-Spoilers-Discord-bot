@@ -1,10 +1,8 @@
 import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
 
-import { Global } from '../../bot';
-declare var global: Global;
-
 import { Log } from '../common/logging';
 import { saveWatchedSets } from '../common/io';
+import { TrySend } from '../common/discord';
 
 /**
  * Stops any current spoilerwatch for set with the given setcode in the given channel
@@ -20,7 +18,7 @@ export function stopWatchCommand(channel: GuildTextBasedChannel | TextBasedChann
         })
     ) {
         Log(`Stopping spoilerwatch for set ${set}.`);
-        channel.send(`Stopping spoilerwatch for set ${set}.`);
+        TrySend(channel, `Stopping spoilerwatch for set ${set}.`);
         // Find the timeout for this set and channel
         global.savedIntervals.find((o, i) => {
             if (o.setcode == set && o.channel == channel.id) {
@@ -37,6 +35,6 @@ export function stopWatchCommand(channel: GuildTextBasedChannel | TextBasedChann
         });
         saveWatchedSets();
     } else {
-        channel.send(`No spoilerwatch for set ${set} is running in this channel.`);
+        TrySend(channel, `No spoilerwatch for set ${set} is running in this channel.`);
     }
 }

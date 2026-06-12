@@ -5,6 +5,7 @@ import { ICard } from '../../models';
 import { Log } from '../common/logging.js';
 import { generateCardMessage } from '../common/card-helper';
 import { scryfallGetSet } from '../common/scryfall';
+import { TrySend } from '../common/discord';
 
 /**
  * Finds all cards in the given set that and post them to the given channel
@@ -15,7 +16,7 @@ export function getAllCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
     if (ignoreBasics != false) {
         message += ' (excluding basic lands)';
     }
-    channel.send(`${message}...`);
+    TrySend(channel, `${message}...`);
 
     scryfallGetSet(set, ignoreBasics, _getSetMessages).then((messages) => {
         Log(`Sending ${messages.length} cards to channel with id ${channel.id}`);
@@ -27,14 +28,16 @@ export function getAllCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
                 }
                 else {
                     let message = messages.pop();
-                    channel.send(message);
+                    if (message) {
+                        TrySend(channel, message);
+                    }
                 }
             },
             constants.MESSAGEINTERVAL,
             messages
         );
     }).catch((err) => {
-        channel.send(err);
+        TrySend(channel, err);
     });
 }
 
