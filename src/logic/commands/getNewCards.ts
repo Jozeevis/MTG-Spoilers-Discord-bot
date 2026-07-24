@@ -23,7 +23,7 @@ export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
     }
 
     let args = new GetNewSetArgs(set, channel.id, verbose);
-    scryfallGetSet(set, ignoreBasics, _getNewSetMessages, args).then((messages) => {
+    scryfallGetSet(set, ignoreBasics, global.showReprints, _getNewSetMessages, args).then((messages) => {
         Log(`Sending ${messages.length} cards to channel with id ${channel.id}`);
         let interval = setInterval(
             function (messages) {

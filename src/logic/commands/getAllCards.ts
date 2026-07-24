@@ -18,7 +18,7 @@ export function getAllCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
     }
     TrySend(channel, `${message}...`);
 
-    scryfallGetSet(set, ignoreBasics, _getSetMessages).then((messages) => {
+    scryfallGetSet(set, ignoreBasics, true, _getSetMessages).then((messages) => {
         Log(`Sending ${messages.length} cards to channel with id ${channel.id}`);
         let interval = setInterval(
             function (messages) {

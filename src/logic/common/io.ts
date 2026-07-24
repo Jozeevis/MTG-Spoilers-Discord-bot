@@ -4,6 +4,7 @@ import fs from 'fs';
 import constants from '../constants';
 import { Log, Error } from './logging';
 import { startSpoilerWatches } from './spoilerWatches';
+import { BotSettings } from "../../models/bot-settings";
 
 /**
  * Returns the data filename for the given set and channelID
@@ -58,37 +59,32 @@ export function readWatchedSets() {
 }
 
 /**
- * Reads preferred prefix from the settings
- * @param {*} defaultPrefix The default prefix to save if no settings file has been made yet
+ * Reads global setting values from the settings file
  */
-export function readPrefix(defaultPrefix: string) {
-    let newPrefix = defaultPrefix;
+export function readSettings() {
+    let settings = new BotSettings(constants.BOTDEFAULTPREFIX, constants.BOTDEFAULTSHOWREPRINTS);
     if (!fs.existsSync(constants.DATADIRECTORY)) {
         fs.mkdirSync(constants.DATADIRECTORY);
     }
     if (!fs.existsSync(constants.SETTINGSPATH)) {
-        fs.writeFile(
-            constants.SETTINGSPATH,
-            '{"prefix":"' + defaultPrefix + '"}',
-            function (err) {
-                if (err) {
-                    Log("Something went wrong with creating new default settings file");
-                    Error(err.message);
-                }
-            }
-        );
+        writeNewSettingsFile();
     } else {
-        fs.readFile(constants.SETTINGSPATH, function (err, buf) {
-            if (err) {
-                Log("Something went wrong with reading settings.json");
-                Error(err.message);
+        try {
+            let buf = fs.readFileSync(constants.SETTINGSPATH);
+            settings = JSON.parse(buf.toString());
+            // Because showReprints is a new setting, set it to default if it doesn't exist yet
+            if (settings.showReprints === undefined) {
+                writeShowReprints(constants.BOTDEFAULTSHOWREPRINTS);
+                settings.showReprints = constants.BOTDEFAULTSHOWREPRINTS;
             }
-            let settings = JSON.parse(buf.toString());
             Log(`Successfully read file ${constants.SETTINGSPATH}.`);
-            newPrefix = settings.prefix;
-        });
+        }
+        catch (err) {
+            Log("Something went wrong with reading settings.json");
+            Error(err);
+        }
     }
-    return newPrefix;
+    return settings;
 }
 
 /**
@@ -99,16 +95,7 @@ export function writePrefix(newPrefix: string) {
         fs.mkdirSync(constants.DATADIRECTORY);
     }
     if (!fs.existsSync(constants.SETTINGSPATH)) {
-        fs.writeFile(
-            constants.SETTINGSPATH,
-            '{"prefix":"' + newPrefix + '"}',
-            function (err) {
-                if (err) {
-                    Log("Something went wrong with creating new settings file");
-                    Error(err.message);
-                }
-            }
-        );
+        writeNewSettingsFile(newPrefix, undefined);
     } else {
         fs.readFile(constants.SETTINGSPATH, function (err, buf) {
             if (err) {
@@ -128,6 +115,38 @@ export function writePrefix(newPrefix: string) {
                 }
             );
             Log("Successfully updated the prefix in the settings file.");
+        });
+    }
+}
+
+/**
+ * Overwrites the current show reprints value in the settings data file with the given value
+ */
+export function writeShowReprints(newValue: boolean) {
+    if (!fs.existsSync(constants.DATADIRECTORY)) {
+        fs.mkdirSync(constants.DATADIRECTORY);
+    }
+    if (!fs.existsSync(constants.SETTINGSPATH)) {
+        writeNewSettingsFile(undefined, newValue);
+    } else {
+        fs.readFile(constants.SETTINGSPATH, function (err, buf) {
+            if (err) {
+                Log("Something went wrong with reading settings.json");
+                Error(err.message);
+            }
+            let settings = JSON.parse(buf.toString());
+            settings.showReprints = newValue;
+            fs.writeFile(
+                constants.SETTINGSPATH,
+                JSON.stringify(settings),
+                function (err) {
+                    if (err) {
+                        Log("Something went wrong with updating reprints value in the settings file");
+                        Error(err.message);
+                    }
+                }
+            );
+            Log("Successfully updated the reprints value in the settings file.");
         });
     }
 }
@@ -196,4 +215,23 @@ export function setSavedCards(setcode: string, channelID: string, newSavedCardID
             Log(`Succesfully written to file ${filename}.`);
         }
     });
+}
+
+/**
+ * Creates a new settings file with the given values or default values if undefined
+ * @param prefixValue Prefix value to be saved, default if undefined
+ * @param showReprintsValue Reprints value to be saved, default if undefined
+ */
+function writeNewSettingsFile(prefixValue?: string, showReprintsValue?: boolean) {
+    let defaultSettings = new BotSettings(prefixValue ?? constants.BOTDEFAULTPREFIX, showReprintsValue ?? constants.BOTDEFAULTSHOWREPRINTS);
+    fs.writeFile(
+        constants.SETTINGSPATH,
+        JSON.stringify(defaultSettings),
+        function (err) {
+            if (err) {
+                Log("Something went wrong with creating new settings file");
+                Error(err.message);
+            }
+        }
+    );
 }

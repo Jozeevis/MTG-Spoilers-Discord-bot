@@ -6,4 +6,5 @@ declare global {
     var savedIntervals: ISavedInterval[];
     var watchedSetcodes: IWatchedSetcode[];
     var prefix: string;
+    var showReprints: boolean;
 }
