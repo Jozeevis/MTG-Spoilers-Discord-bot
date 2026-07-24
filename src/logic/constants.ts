@@ -14,6 +14,7 @@ const BASICLANDNAMES = ["plains", "island", "swamp", "mountain", "forest"];
 
 export default {
     BOTDEFAULTPREFIX: "!",
+    BOTDEFAULTSHOWREPRINTS: true,
     BOTNECESSARYPERMISSION: PermissionsBitField.Flags.ManageMessages,
     SPOILERWATCHINTERVALTIME: 1000 * 60 * 10, // in milliseconds, so 1000 * 60 * 30 = every 10 minutes
     DATADIRECTORY,

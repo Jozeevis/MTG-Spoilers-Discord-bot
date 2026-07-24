@@ -16,6 +16,7 @@ export function helpCommand(channel: GuildTextBasedChannel | TextBasedChannel, p
     helpMessage.push(`**${prefix}unwatch <setcode>**: Stops the spoilerwatch for set with the given (3-character) setcode.`);
     helpMessage.push(`**${prefix}clear <setcode>**: Clears any saved data regarding sent cards for set with the given (3-character) setcode.`);
     helpMessage.push(`**${prefix}prefix <prefix>**: Changes the prefix for commands the bot responds to. Defaults to '!'.`);
+    helpMessage.push(`**${prefix}reprints**: Toggles whether the bot will show reprints when posting unseen cards or not. Defaults to true.`);
     helpMessage.push(`**${prefix}ping**: Responds with 'Pong!'.`);
     helpMessage.push(`**${prefix}help**: You are here!`);
 

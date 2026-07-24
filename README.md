@@ -43,6 +43,11 @@ Will change the prefix the bot listens to to the given new prefix.
 
 Example: `!prefix $`
 
+### reprints/togglereprints
+Will toggle whether the bot will include reprints when showing new cards (via getnew or watch commands). By default this is true.
+
+Example: `!togglereprints`
+
 ### ping
 Will send a message 'Pong!'.
 
@@ -70,7 +75,8 @@ Will send a message with all possible commands and usages.
 This file contains general configuration for the bot. It currently contains the following:
 ```json
 {
-    "prefix": "!"
+    "prefix": "!",
+    "showReprints": true
 }
 ```
 The value of "prefix" contains the character the bot looks at to determine if a message contains a command it should do something with.

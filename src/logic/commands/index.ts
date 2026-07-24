@@ -5,4 +5,5 @@ export * from './getNewCards.js';
 export * from './startWatch.js';
 export * from './stopWatch.js';
 export * from './prefix.js';
+export * from './toggleReprints.js';
 export * from './help.js';

@@ -2,8 +2,7 @@ import Discord from 'discord.js';
 
 import auth from './auth.json';
 
-import constants from './logic/constants';
-import { readWatchedSets, readPrefix } from './logic/common/io';
+import { readSettings, readWatchedSets } from './logic/common/io';
 import * as commands from './logic/commands';
 import { Log, Error } from './logic/common/logging';
 import * as permissions from './logic/common/permissions';
@@ -26,12 +25,13 @@ try {
 global.bot.on(Discord.Events.ClientReady, function () {
     Log("Connected!");
     Log(`Logged in as: ${global.bot.user?.username} - (${global.bot.user?.id})`);
+    
+    let settings = readSettings();
+    global.prefix = settings.prefix
+    global.showReprints = settings.showReprints;
 
     // Initialize savedIntervals and watchedSetcodes
     global.savedIntervals = [];
-    global.prefix = readPrefix(
-        constants.BOTDEFAULTPREFIX
-    );
     readWatchedSets();
 });
 
@@ -113,6 +113,13 @@ global.bot.on(Discord.Events.MessageCreate, async (message) => {
                 case "prefix":
                     if (permissions.checkPermissions(message)) {
                         commands.prefixCommand(message.channel, arg2);
+                    }
+                    break;
+                // Toggles whether the bot shows reprints when posting unseen cards
+                case "reprints":
+                case "togglereprints":
+                    if (permissions.checkPermissions(message)) {
+                        commands.toggleReprintCommand(message.channel);
                     }
                     break;
                 // Sends a list of all possible commands

@@ -40,8 +40,11 @@ function _parseCard(data: string, name: string): Promise<ICard> {
     })
 }
 
-export async function scryfallGetSet(set: string, ignoreBasics: boolean, callback: (cards: ICard[], args?: { [key: string]: any }) => Promise<string[]>, args?: { [key: string]: any }): Promise<string[]> {
-    const query = `e:${set}`;
+export async function scryfallGetSet(set: string, ignoreBasics: boolean, showReprints: boolean, callback: (cards: ICard[], args?: { [key: string]: any }) => Promise<string[]>, args?: { [key: string]: any }): Promise<string[]> {
+    let query = `e:${set}`;
+    if (!showReprints) {
+        query += ' not:reprint';
+    }
     const endpoint = `https://api.scryfall.com/cards/search?order=spoiled&q=${encodeURIComponent(query)}&unique=prints`;
     let data = await makeScryfallAPICall(endpoint).catch((err) => {
         return Promise.reject(err);
