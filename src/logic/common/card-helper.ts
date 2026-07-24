@@ -60,9 +60,12 @@ function generateDescriptionText(card: ICard) {
             description.push(getImageUrl(card.image_uris));
         }
     } else {
-        // split cards are special
         let nameLine = `**${card.name}**`;
-        nameLine += ` _(2-faced card)_`;
+
+        // Cards with multiple parts but only top-level image are not actually two-faced cards (but can be split/adventure etc.)
+        if (!card.image_uris) {
+            nameLine += ` _(2-faced card)_`;
+        }
         description.push(nameLine);
 
         card.card_faces.forEach((face) => {
@@ -96,6 +99,11 @@ function generateDescriptionText(card: ICard) {
             }
             description.push('');
         });
+
+        // Cards with multiple parts (e.g. adventures) also have multiple parts, but only one image
+        if (card.image_uris) {
+            description.push(getImageUrl(card.image_uris));
+        }
     }
 
     return description.join('\n');
