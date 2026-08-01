@@ -1,4 +1,4 @@
-import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
+import { ChatInputCommandInteraction, GuildTextBasedChannel, MessageFlags, SlashCommandBuilder, TextBasedChannel } from 'discord.js';
 
 import { ICard } from '../../models';
 import constants from '../constants';
@@ -13,7 +13,7 @@ import { TrySend } from '../common/discord';
  * @param {boolean} verbose If true, will send messages to the channel if no cards are found
  * @param {boolean} ignoreBasics If true, the standard basic lands will not be sent (plains, island, swamp, mountain, forest)
  */
-export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedChannel, set: string, verbose = false, ignoreBasics = true) {
+export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedChannel, set: string, verbose: boolean = false, ignoreBasics: boolean = true) {
     if (verbose) {
         let message = `Trying to get newly spoiled cards from set with code ${set}`;
         if (ignoreBasics != false) {
@@ -48,12 +48,61 @@ export function getNewCardsCommand(channel: GuildTextBasedChannel | TextBasedCha
     });
 }
 
+const setcodeOptionName = 'setcode';
+const ignoreBasicsOptionName = 'ignore-basics';
+
+export const data = new SlashCommandBuilder()
+    .setName('get_new')
+    .setDescription('Get unseen cards from the given set.')
+    .addStringOption((option) => 
+        option.setName(setcodeOptionName)
+        .setDescription('The set code for the set to be retrieved')
+        .setRequired(true)
+        .setMaxLength(constants.SETCODEMAXLENGTH)
+    ).addBooleanOption((option) => 
+        option.setName(ignoreBasicsOptionName)
+        .setDescription("Whether to ignore basics, if true basics won't be included in the results")
+    );
+
+export async function execute(interaction: ChatInputCommandInteraction) {
+    const setCode = interaction.options.getString(setcodeOptionName);
+    if (setCode === null) {
+        await interaction.reply({ content: 'You need to enter the set code to retrieve', flags: MessageFlags.Ephemeral });
+    }
+    const ignoreBasics = interaction.options.getBoolean(ignoreBasicsOptionName) ?? false;
+    await interaction.deferReply();
+    
+    let args = new GetNewSetArgs(setCode as string, interaction.channelId, true);
+    scryfallGetSet(setCode as string, ignoreBasics, global.showReprints, _getNewSetMessages, args).then((messages) => {
+        Log(`Sending ${messages.length} cards to channel with id ${interaction.channelId}`);
+        let interval = setInterval(
+            async function (messages) {
+                if (messages.length <= 0) {
+                    Log(`Done with sending cards to channel with id ${interaction.channelId}`);
+                    clearInterval(interval);
+                }
+                else {
+                    let message = messages.pop();
+                    if (message) {
+                        await interaction.followUp(message);
+                    }
+                }
+            },
+            constants.MESSAGEINTERVAL,
+            messages
+        );
+    }).catch(async (err) => {
+        Error(err);
+        await interaction.editReply(err as string);
+    });
+};
+
 async function _getNewSetMessages(cards: ICard[], args?: { [key: string]: any }): Promise<string[]> {
     const getNewSetArgs = args as GetNewSetArgs;
     if (!getNewSetArgs) {
         const errorMessage = 'Something went wrong in the bot parsing your command.'
         Error(errorMessage);
-        return Promise.reject([errorMessage]);
+        return Promise.reject(errorMessage);
     }
 
     // Read which cards are already saved
@@ -73,7 +122,7 @@ async function _getNewSetMessages(cards: ICard[], args?: { [key: string]: any })
         if (newCardlist.length <= 0) {
             Log(`No new cards were found with set code ${getNewSetArgs.set}`);
             if (getNewSetArgs.verbose) {
-                return Promise.reject([`No new cards were found with set code ${getNewSetArgs.set}.`]);
+                return Promise.reject(`No new cards were found with set code ${getNewSetArgs.set}.`);
             }
             else {
                 return [];
@@ -91,7 +140,7 @@ async function _getNewSetMessages(cards: ICard[], args?: { [key: string]: any })
             Log("Something went wrong while saving new saved card data.");
             Error(error);
             if (getNewSetArgs.verbose) {
-                return Promise.reject(['Something went wrong while trying to save new cards list.']);
+                return Promise.reject('Something went wrong while trying to save new cards list.');
             }
         }
 

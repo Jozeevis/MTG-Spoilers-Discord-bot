@@ -22,11 +22,20 @@ const rest = new REST().setToken(auth.token);
 
 (async () => {
 	try {
-		Log(`Started refreshing ${commands.length} application (/) commands.`);
+		Log(`Started refreshing ${commands.length} slash commands.`);
 
-		const data = await rest.put(Routes.applicationCommands(auth.clientId), { body: commands });
-
-		Log(`Successfully reloaded ${(data as unknown[]).length} application (/) commands.`);
+		let data;
+		if ('guildId' in auth) {
+			await rest.put(Routes.applicationCommands(auth.clientId), { body: [] });
+			data = await rest.put(Routes.applicationGuildCommands(auth.clientId, auth.guildId as string), { body: commands });
+			Log(`Successfully reloaded ${(data as unknown[]).length} slash commands for server with id ${auth.guildId}.`);
+		}
+		else {
+			data = await rest.put(Routes.applicationCommands(auth.clientId), { body: commands });
+			// Use the following line to clear any server registered commands if you want to use global ones instead (replace GUILD-ID with your server id)
+			// await rest.put(Routes.applicationGuildCommands(auth.clientId, 'GUILD-ID'), { body: [] });
+			Log(`Successfully reloaded ${(data as unknown[]).length} application slash commands.`);
+		}
 	} catch (error) {
 		Error(error);
 	}

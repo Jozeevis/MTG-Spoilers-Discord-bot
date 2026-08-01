@@ -1,4 +1,4 @@
-import { GuildTextBasedChannel, TextBasedChannel, SlashCommandBuilder, CommandInteraction } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel, SlashCommandBuilder, CommandInteraction, MessageFlags } from 'discord.js';
 import { TrySend } from '../common/discord';
 
 /**
@@ -12,10 +12,12 @@ export function helpCommand(channel: GuildTextBasedChannel | TextBasedChannel, p
 }
 
 module.exports = {
-	data: new SlashCommandBuilder().setName('help').setDescription('Will show all possible commands and usages.'),
-	async execute(interaction: CommandInteraction) {
-		await interaction.reply(_createHelpMessage("/"));
-	},
+	data: new SlashCommandBuilder()
+        .setName('help')
+        .setDescription('Will show all possible commands and usages.'),
+        async execute(interaction: CommandInteraction) {
+            await interaction.reply({ content: _createHelpMessage("/"), flags: MessageFlags.Ephemeral });
+        },
 };
 
 function _createHelpMessage(prefix: string): string {

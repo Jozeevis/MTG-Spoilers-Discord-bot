@@ -1,19 +1,48 @@
-import { GuildTextBasedChannel, TextBasedChannel } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel, SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 
 import { ICard } from '../../models';
 import { generateCardMessage } from '../common/card-helper.js';
 import { scryfallGetCard } from '../common/scryfall.js';
 import { TrySend } from '../common/discord';
+import constants from '../constants';
 
 /**
  * Tries to find card with the given name and post it to the given channel
  * Uses Scryfall fuzzy search
  */
 export function getCardCommand(channel: GuildTextBasedChannel | TextBasedChannel, name: string) {
-    scryfallGetCard(name, _getCardMessage).then((message) => {
+    _getCard(name).then((message) => {
         TrySend(channel, message);
+    });
+}
+
+const cardNameOptionName = 'name';
+
+export const data = new SlashCommandBuilder()
+    .setName('get')
+    .setDescription('Find a card matching the given name')
+    .addStringOption((option) => 
+        option.setName(cardNameOptionName)
+        .setDescription('The card name to search for')
+        .setRequired(true)
+        .setMaxLength(constants.CARDNAMEMAXLENGTH)
+    );
+
+export async function execute(interaction: ChatInputCommandInteraction) {
+    const cardName = interaction.options.getString(cardNameOptionName);
+    if (cardName === null) {
+        await interaction.reply({ content: 'You need to enter the a name to search for', flags: MessageFlags.Ephemeral });
+    }
+    await interaction.deferReply();
+    let message = await _getCard(cardName as string);
+    await interaction.editReply(message);
+};
+
+async function _getCard(name: string): Promise<string> {
+    return scryfallGetCard(name, _getCardMessage).then((message) => {
+        return Promise.resolve(message);
     }).catch((err) => {
-        TrySend(channel, err);
+        return Promise.resolve(err);
     });
 }
 

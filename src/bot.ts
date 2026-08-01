@@ -3,7 +3,7 @@ import Discord from 'discord.js';
 import auth from './auth.json';
 
 import { readSettings, readWatchedSets } from './logic/common/io';
-import * as commands from './logic/commands';
+import * as botCommands from './logic/commands';
 import { Log, Error } from './logic/common/logging';
 import * as permissions from './logic/common/permissions';
 import { findCommands } from './logic/common/commands';
@@ -66,7 +66,7 @@ global.bot.on(Discord.Events.MessageCreate, async (message) => {
                     if (queryIndex > 0) {
                         var query = message.content.substring(queryIndex);
                         if (query) {
-                            commands.getCardCommand(message.channel, query);
+                            botCommands.getCardCommand(message.channel, query);
                         }
                         else {
                             message.channel.send(`You have to supply a query, like so:\n${global.prefix}get Sonic Assault`);
@@ -81,7 +81,7 @@ global.bot.on(Discord.Events.MessageCreate, async (message) => {
                 case "getallcards":
                     if (permissions.checkPermissions(message)) {
                         let bool = arg3 === "true";
-                        commands.getAllCardsCommand(message.channel, arg2, bool);
+                        botCommands.getAllCardsCommand(message.channel, arg2, bool);
                     }
                     break;
                 // Get all new cards from the given set and send them in the current channel
@@ -89,45 +89,45 @@ global.bot.on(Discord.Events.MessageCreate, async (message) => {
                 case "getnewcards":
                     if (permissions.checkPermissions(message)) {
                         let bool = arg3 === "true";
-                        commands.getNewCardsCommand(message.channel, arg2, true, bool);
+                        botCommands.getNewCardsCommand(message.channel, arg2, true, bool);
                     }
                     break;
                 // Start spoilerwatch for the given set ID in the current channel
                 case "watch":
                 case "startwatch":
                     if (permissions.checkPermissions(message)) {
-                        commands.startWatchCommand(message.channel, arg2);
+                        botCommands.startWatchCommand(message.channel, arg2);
                     }
                     break;
                 // Stop spoilerwatch for the given set ID in the current channel
                 case "unwatch":
                 case "stopwatch":
                     if (permissions.checkPermissions(message)) {
-                        commands.stopWatchCommand(message.channel, arg2);
+                        botCommands.stopWatchCommand(message.channel, arg2);
                     }
                     break;
                 // Clears the saved data for the given set in the current channel
                 case "clear":
                     if (permissions.checkPermissions(message)) {
-                        commands.clearCommand(message.channel, arg2);
+                        botCommands.clearCommand(message.channel, arg2);
                     }
                     break;
                 // Changes the prefix the bot uses for its commands
                 case "prefix":
                     if (permissions.checkPermissions(message)) {
-                        commands.prefixCommand(message.channel, arg2);
+                        botCommands.prefixCommand(message.channel, arg2);
                     }
                     break;
                 // Toggles whether the bot shows reprints when posting unseen cards
                 case "reprints":
                 case "togglereprints":
                     if (permissions.checkPermissions(message)) {
-                        commands.toggleReprintCommand(message.channel);
+                        botCommands.toggleReprintCommand(message.channel);
                     }
                     break;
                 // Sends a list of all possible commands
                 case "help":
-                    commands.helpCommand(message.channel, global.prefix);
+                    botCommands.helpCommand(message.channel, global.prefix);
                     break;
                 default:
                     message.channel.send(`No command ${cmd} found, please check your spelling or use ${global.prefix}help for a list of possible commands.`);
@@ -142,7 +142,6 @@ global.bot.on(Discord.Events.MessageCreate, async (message) => {
 
 global.bot.on(Discord.Events.InteractionCreate, async (interaction) => {
 	if (!interaction.isChatInputCommand()) return; 
-	console.log(interaction);
     const command = global.commands.get(interaction.commandName);
     
     if (!command) {

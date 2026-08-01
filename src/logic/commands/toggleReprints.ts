@@ -1,4 +1,4 @@
-import { GuildTextBasedChannel, TextBasedChannel, SlashCommandBuilder, CommandInteraction } from 'discord.js';
+import { GuildTextBasedChannel, TextBasedChannel, SlashCommandBuilder, CommandInteraction, MessageFlags } from 'discord.js';
 
 import { writeShowReprints } from '../common/io';
 import { TrySend } from '../common/discord';
@@ -11,12 +11,13 @@ export function toggleReprintCommand(channel: GuildTextBasedChannel | TextBasedC
     TrySend(channel, _getMessage(newValue));
 }
 
-module.exports = {
-	data: new SlashCommandBuilder().setName('toggle-reprints').setDescription('Toggle whether the bot will include reprints when showing new cards.'),
-	async execute(interaction: CommandInteraction) {
-        let newValue = _toggleReprintsValue();
-		await interaction.reply(_getMessage(newValue));
-	},
+export const data = new SlashCommandBuilder()
+    .setName('toggle_reprints')
+    .setDescription('Toggle whether the bot will include reprints when showing new cards.');
+
+export async function execute(interaction: CommandInteraction) {
+    let newValue = _toggleReprintsValue();
+    await interaction.reply({ content: _getMessage(newValue), flags: MessageFlags.Ephemeral });
 };
 
 function _toggleReprintsValue(): boolean {
