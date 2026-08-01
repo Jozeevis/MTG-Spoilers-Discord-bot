@@ -6,6 +6,7 @@ import { readSettings, readWatchedSets } from './logic/common/io';
 import * as commands from './logic/commands';
 import { Log, Error } from './logic/common/logging';
 import * as permissions from './logic/common/permissions';
+import { findCommands } from './logic/common/commands';
 
 // Initialize Discord Bot
 Log("Initializing bot...");
@@ -33,6 +34,8 @@ global.bot.on(Discord.Events.ClientReady, function () {
     // Initialize savedIntervals and watchedSetcodes
     global.savedIntervals = [];
     readWatchedSets();
+
+    global.commands = findCommands();
 });
 
 // When the bot sees a message in any channel it can read
@@ -136,6 +139,34 @@ global.bot.on(Discord.Events.MessageCreate, async (message) => {
         }
     }
 });
+
+global.bot.on(Discord.Events.InteractionCreate, async (interaction) => {
+	if (!interaction.isChatInputCommand()) return; 
+	console.log(interaction);
+    const command = global.commands.get(interaction.commandName);
+    
+    if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({
+				content: 'There was an error while executing this command!',
+				flags: Discord.MessageFlags.Ephemeral,
+			});
+		} else {
+			await interaction.reply({
+				content: 'There was an error while executing this command!',
+				flags: Discord.MessageFlags.Ephemeral,
+			});
+		}
+	}
+})
 
 // Reconnect if the bot is disconnected gracefully
 global.bot.on("disconnect", function (errMsg, code) {

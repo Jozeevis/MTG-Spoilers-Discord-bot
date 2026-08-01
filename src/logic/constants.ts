@@ -7,6 +7,7 @@ const DATADIRECTORY = `${appDir}/data`;
 const SETTINGSPATH = `${DATADIRECTORY}/settings.json`;
 const LOGPATH = `${DATADIRECTORY}/log.txt`;
 const WATCHEDSETCODESPATH = `${DATADIRECTORY}/watchedsetcodes.json`;
+const COMMANDSDIRECTYORY = `${appDir}/build/logic/commands`;
 
 const MESSAGEINTERVAL = 1500;
 const APICALLINTERVAL = 500;
@@ -21,6 +22,7 @@ export default {
     SETTINGSPATH,
     LOGPATH,
     WATCHEDSETCODESPATH,
+    COMMANDSDIRECTYORY,
     MESSAGEINTERVAL,
     APICALLINTERVAL,
     BASICLANDNAMES,

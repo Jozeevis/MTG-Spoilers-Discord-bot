@@ -7,3 +7,4 @@ export * from './stopWatch.js';
 export * from './prefix.js';
 export * from './toggleReprints.js';
 export * from './help.js';
+export * from './ping.js';
