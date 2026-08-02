@@ -31,7 +31,7 @@ const rest = new REST().setToken(auth.token);
 			Log(`Successfully reloaded ${(data as unknown[]).length} slash commands for server with id ${auth.guildId}.`);
 		}
 		else {
-			data = await rest.put(Routes.applicationCommands(auth.clientId), { body: commands });
+			data = await rest.put(Routes.applicationCommands(auth["clientId"]), { body: commands });
 			// Use the following line to clear any server registered commands if you want to use global ones instead (replace GUILD-ID with your server id)
 			// await rest.put(Routes.applicationGuildCommands(auth.clientId, 'GUILD-ID'), { body: [] });
 			Log(`Successfully reloaded ${(data as unknown[]).length} application slash commands.`);
