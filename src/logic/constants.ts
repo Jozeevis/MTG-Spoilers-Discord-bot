@@ -7,9 +7,13 @@ const DATADIRECTORY = `${appDir}/data`;
 const SETTINGSPATH = `${DATADIRECTORY}/settings.json`;
 const LOGPATH = `${DATADIRECTORY}/log.txt`;
 const WATCHEDSETCODESPATH = `${DATADIRECTORY}/watchedsetcodes.json`;
+const COMMANDSDIRECTYORY = `${appDir}/build/logic/commands`;
 
 const MESSAGEINTERVAL = 1500;
 const APICALLINTERVAL = 500;
+const PREFIXMAXLENGTH = 8;
+const SETCODEMAXLENGTH = 4;
+const CARDNAMEMAXLENGTH = 2000; // Scryfall API returns error when longer
 const BASICLANDNAMES = ["plains", "island", "swamp", "mountain", "forest"];
 
 export default {
@@ -21,7 +25,11 @@ export default {
     SETTINGSPATH,
     LOGPATH,
     WATCHEDSETCODESPATH,
+    COMMANDSDIRECTYORY,
     MESSAGEINTERVAL,
     APICALLINTERVAL,
+    PREFIXMAXLENGTH,
+    SETCODEMAXLENGTH,
+    CARDNAMEMAXLENGTH,
     BASICLANDNAMES,
 };

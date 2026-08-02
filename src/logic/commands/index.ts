@@ -1,9 +1,9 @@
-export * from './clear.js';
-export * from './getCard.js';
-export * from './getAllCards.js';
-export * from './getNewCards.js';
-export * from './startWatch.js';
-export * from './stopWatch.js';
-export * from './prefix.js';
-export * from './toggleReprints.js';
-export * from './help.js';
+export { clearCommand } from './clear.js';
+export { getCardCommand } from './getCard.js';
+export { getAllCardsCommand } from './getAllCards.js';
+export { getNewCardsCommand } from './getNewCards.js';
+export { startWatchCommand } from './startWatch.js';
+export { stopWatchCommand } from './stopWatch.js';
+export { prefixCommand } from './prefix.js';
+export { toggleReprintCommand } from './toggleReprints.js';
+export { helpCommand } from './help.js';
